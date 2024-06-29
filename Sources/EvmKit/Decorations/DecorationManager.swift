@@ -50,9 +50,9 @@ class DecorationManager {
         return nil
     }
 
-    private func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions: [InternalTransaction] = [], eventInstances: [ContractEventInstance] = []) -> TransactionDecoration {
+    private func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions: [InternalTransaction] = [], eventInstances: [ContractEventInstance] = [], isLock: Bool) -> TransactionDecoration {
         for decorator in transactionDecorators {
-            if let decoration = decorator.decoration(from: from, to: to, value: value, contractMethod: contractMethod, internalTransactions: internalTransactions, eventInstances: eventInstances) {
+            if let decoration = decorator.decoration(from: from, to: to, value: value, contractMethod: contractMethod, internalTransactions: internalTransactions, eventInstances: eventInstances, isLock: isLock) {
                 return decoration
             }
         }
@@ -97,7 +97,7 @@ extension DecorationManager {
         }
 
         for decorator in transactionDecorators {
-            if let decoration = decorator.decoration(from: from, to: transactionData.to, value: transactionData.value, contractMethod: contractMethod, internalTransactions: [], eventInstances: []) {
+            if let decoration = decorator.decoration(from: from, to: transactionData.to, value: transactionData.value, contractMethod: contractMethod, internalTransactions: [], eventInstances: [], isLock: false) {
                 return decoration
             }
         }
@@ -116,13 +116,20 @@ extension DecorationManager {
         }
 
         return transactions.map { transaction in
+            let isLocked: Bool
+            if let lockDay = transaction.lockDay, lockDay > 0 {
+                isLocked = true
+            }else {
+                isLocked = false
+            }
             let decoration = decoration(
                 from: transaction.from,
                 to: transaction.to,
                 value: transaction.value,
                 contractMethod: contractMethod(input: transaction.input),
                 internalTransactions: internalTransactionsMap[transaction.hash] ?? [],
-                eventInstances: eventInstancesMap[transaction.hash] ?? []
+                eventInstances: eventInstancesMap[transaction.hash] ?? [], 
+                isLock: isLocked
             )
 
             return FullTransaction(transaction: transaction, decoration: decoration)
@@ -141,14 +148,21 @@ extension DecorationManager {
         }
 
         let transaction = fullRpcTransaction.transaction(timestamp: timestamp)
-
+        
+        let isLocked: Bool
+        if let lockDay = transaction.lockDay, lockDay > 0 {
+            isLocked = true
+        }else {
+            isLocked = false
+        }
         let decoration = decoration(
             from: transaction.from,
             to: transaction.to,
             value: transaction.value,
             contractMethod: contractMethod(input: transaction.input),
             internalTransactions: fullRpcTransaction.providerInternalTransactions.map(\.internalTransaction),
-            eventInstances: fullRpcTransaction.rpcTransactionReceipt.map { eventInstances(logs: $0.logs) } ?? []
+            eventInstances: fullRpcTransaction.rpcTransactionReceipt.map { eventInstances(logs: $0.logs) } ?? [], 
+            isLock: isLocked
         )
 
         return FullTransaction(transaction: transaction, decoration: decoration)

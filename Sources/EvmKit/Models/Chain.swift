@@ -18,6 +18,10 @@ public struct Chain {
     public var isMainNet: Bool {
         coinType != 1
     }
+    
+    public var isSafeFourTestNet: Bool {
+        id == 6666666
+    }
 }
 
 extension Chain: Equatable {
@@ -161,6 +165,16 @@ public extension Chain {
             coinType: 1,
             syncInterval: 15,
             gasLimit: 10_000_000,
+            isEIP1559Supported: false
+        )
+    }
+    
+    static var SafeFour: Chain {
+        Chain(
+            id: 6_666_666,
+            coinType: 60,
+            syncInterval: 15,
+            gasLimit: 300_000_000,
             isEIP1559Supported: false
         )
     }

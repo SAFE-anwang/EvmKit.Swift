@@ -45,6 +45,7 @@ class TransactionStorage {
                 t.column(Transaction.Columns.gasLimit.name, .integer)
                 t.column(Transaction.Columns.gasUsed.name, .integer)
                 t.column(Transaction.Columns.replacedWith.name, .text)
+                t.column(Transaction.Columns.lockDay.name, .integer)
 
                 t.primaryKey([Transaction.Columns.hash.name], onConflict: .replace)
             }

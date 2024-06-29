@@ -8,7 +8,11 @@ public class Signer {
     private let transactionBuilder: TransactionBuilder
     private let transactionSigner: TransactionSigner
     private let ethSigner: EthSigner
-
+    
+    public var privateKey: Data {
+        ethSigner.privateKey
+    }
+    
     init(transactionBuilder: TransactionBuilder, transactionSigner: TransactionSigner, ethSigner: EthSigner) {
         self.transactionBuilder = transactionBuilder
         self.transactionSigner = transactionSigner

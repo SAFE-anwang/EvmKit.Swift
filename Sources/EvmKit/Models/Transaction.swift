@@ -21,8 +21,10 @@ public class Transaction: Record {
     public let gasUsed: Int?
 
     public var replacedWith: Data?
+    
+    public var lockDay: Int?
 
-    public init(hash: Data, timestamp: Int, isFailed: Bool, blockNumber: Int? = nil, transactionIndex: Int? = nil, from: Address? = nil, to: Address? = nil, value: BigUInt? = nil, input: Data? = nil, nonce: Int? = nil, gasPrice: Int? = nil, maxFeePerGas: Int? = nil, maxPriorityFeePerGas: Int? = nil, gasLimit: Int? = nil, gasUsed: Int? = nil, replacedWith: Data? = nil) {
+    public init(hash: Data, timestamp: Int, isFailed: Bool, blockNumber: Int? = nil, transactionIndex: Int? = nil, from: Address? = nil, to: Address? = nil, value: BigUInt? = nil, input: Data? = nil, nonce: Int? = nil, gasPrice: Int? = nil, maxFeePerGas: Int? = nil, maxPriorityFeePerGas: Int? = nil, gasLimit: Int? = nil, gasUsed: Int? = nil, replacedWith: Data? = nil, lockDay: Int? = nil) {
         self.hash = hash
         self.timestamp = timestamp
         self.isFailed = isFailed
@@ -39,7 +41,8 @@ public class Transaction: Record {
         self.gasLimit = gasLimit
         self.gasUsed = gasUsed
         self.replacedWith = replacedWith
-
+        self.lockDay = lockDay
+        
         super.init()
     }
 
@@ -64,6 +67,7 @@ public class Transaction: Record {
         case gasLimit
         case gasUsed
         case replacedWith
+        case lockDay
     }
 
     required init(row: Row) throws {
@@ -85,7 +89,8 @@ public class Transaction: Record {
         gasLimit = row[Columns.gasLimit]
         gasUsed = row[Columns.gasUsed]
         replacedWith = row[Columns.replacedWith]
-
+        lockDay = row[Columns.lockDay]
+        
         try super.init(row: row)
     }
 
@@ -106,5 +111,6 @@ public class Transaction: Record {
         container[Columns.gasLimit] = gasLimit
         container[Columns.gasUsed] = gasUsed
         container[Columns.replacedWith] = replacedWith
+        container[Columns.lockDay] = lockDay
     }
 }

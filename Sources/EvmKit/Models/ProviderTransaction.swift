@@ -21,12 +21,11 @@ public struct ProviderTransaction: ImmutableMappable {
     let gasUsed: Int?
 
     public init(map: Map) throws {
-        blockNumber = try map.value("blockNumber", using: StringIntTransform())
-        timestamp = try map.value("timeStamp", using: StringIntTransform())
+
+        blockNumber = try map.value("blockNumber")//, using: StringIntTransform())
+        timestamp = try map.value("timeStamp")//, using: StringIntTransform())
         hash = try map.value("hash", using: HexDataTransform())
         nonce = try map.value("nonce", using: StringIntTransform())
-        blockHash = try? map.value("blockHash", using: HexDataTransform())
-        transactionIndex = try map.value("transactionIndex", using: StringIntTransform())
         from = try map.value("from", using: HexAddressTransform())
         to = try? map.value("to", using: HexAddressTransform())
         value = try map.value("value", using: StringBigUIntTransform())
@@ -34,8 +33,35 @@ public struct ProviderTransaction: ImmutableMappable {
         gasPrice = try map.value("gasPrice", using: StringIntTransform())
         isError = try? map.value("isError", using: StringIntTransform())
         txReceiptStatus = try? map.value("txreceipt_status", using: StringIntTransform())
-        input = try map.value("input", using: HexDataTransform())
         cumulativeGasUsed = try? map.value("cumulativeGasUsed", using: StringIntTransform())
-        gasUsed = try? map.value("gasUsed", using: StringIntTransform())
+        gasUsed = try? map.value("gasUsed")//, using: StringIntTransform())
+        blockHash = try? map.value("blockHash")//, using: HexDataTransform())
+        input = try map.value("input", using: HexDataTransform())
+        transactionIndex = try map.value("transactionIndex", using: StringIntTransform())
+    }
+}
+
+public struct Safe4AccountManagerTransaction: ImmutableMappable {
+    let hash: Data
+    let blockNumber: Int
+    let timestamp: Int
+    let from: Address
+    let to: Address
+    let amount: BigUInt
+    let action: String
+    let lockId: Int
+    let lockDay: Int
+    
+    public init(map: Map) throws {
+
+        blockNumber = try map.value("blockNumber")//, using: StringIntTransform())
+        timestamp = try map.value("timeStamp", using: StringIntTransform())
+        hash = try map.value("hash", using: HexDataTransform())
+        from = try map.value("from", using: HexAddressTransform())
+        to = try map.value("to", using: HexAddressTransform())
+        amount = try map.value("amount", using: StringBigUIntTransform())
+        action = try map.value("action")
+        lockId = try map.value("lockId", using: StringIntTransform())
+        lockDay = try map.value("lockDay", using: StringIntTransform())
     }
 }

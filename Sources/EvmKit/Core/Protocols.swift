@@ -15,7 +15,7 @@ protocol IBlockchain {
     var accountState: AccountState? { get }
 
     func nonce(defaultBlockParameter: DefaultBlockParameter) async throws -> Int
-    func send(rawTransaction: RawTransaction, signature: Signature) async throws -> Transaction
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int?) async throws -> Transaction
 
     func transactionReceipt(transactionHash: Data) async throws -> RpcTransactionReceipt
     func transaction(transactionHash: Data) async throws -> RpcTransaction
@@ -51,7 +51,7 @@ public protocol IEventDecorator {
 }
 
 public protocol ITransactionDecorator {
-    func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions: [InternalTransaction], eventInstances: [ContractEventInstance]) -> TransactionDecoration?
+    func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions: [InternalTransaction], eventInstances: [ContractEventInstance], isLock: Bool) -> TransactionDecoration?
 }
 
 public protocol ITransactionProvider {
@@ -61,4 +61,5 @@ public protocol ITransactionProvider {
     func tokenTransactions(startBlock: Int) async throws -> [ProviderTokenTransaction]
     func eip721Transactions(startBlock: Int) async throws -> [ProviderEip721Transaction]
     func eip1155Transactions(startBlock: Int) async throws -> [ProviderEip1155Transaction]
+    func safe4AccountManagerTransactions(startBlock: Int) async throws -> [Safe4AccountManagerTransaction]
 }

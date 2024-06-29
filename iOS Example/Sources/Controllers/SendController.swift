@@ -16,7 +16,8 @@ class SendController: UIViewController {
     private let amountTextField = UITextField()
     private let gasPriceLabel = UILabel()
     private let sendButton = UIButton()
-
+    private let sendLockButton = UIButton()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -52,6 +53,7 @@ class SendController: UIViewController {
         }
 
         addressTextField.font = .systemFont(ofSize: 13)
+        addressTextField.text = Manager.shared.adapter.receiveAddress.eip55
 
         let amountLabel = UILabel()
 
@@ -117,6 +119,18 @@ class SendController: UIViewController {
         sendButton.setTitleColor(.lightGray, for: .disabled)
         sendButton.setTitle("Send", for: .normal)
         sendButton.addTarget(self, action: #selector(send), for: .touchUpInside)
+        
+        view.addSubview(sendLockButton)
+        sendLockButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(sendButton.snp.bottom).offset(24)
+        }
+
+        sendLockButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
+        sendLockButton.setTitleColor(.systemBlue, for: .normal)
+        sendLockButton.setTitleColor(.lightGray, for: .disabled)
+        sendLockButton.setTitle("Send Lock", for: .normal)
+        sendLockButton.addTarget(self, action: #selector(sendLock), for: .touchUpInside)
 
         addressTextField.addTarget(self, action: #selector(updateEstimatedGasPrice), for: .editingChanged)
         amountTextField.addTarget(self, action: #selector(updateEstimatedGasPrice), for: .editingChanged)
@@ -178,6 +192,33 @@ class SendController: UIViewController {
         Task { [weak self, adapter, gasPrice] in
             do {
                 try await adapter.send(to: address, amount: amount, gasLimit: estimateGasLimit, gasPrice: gasPrice)
+                self?.handleSuccess(address: address, amount: amount)
+            } catch {
+                self?.show(error: "Send failed: \(error)")
+            }
+        }
+    }
+    
+    @objc private func sendLock() {
+        guard let addressHex = addressTextField.text?.trimmingCharacters(in: .whitespaces),
+              let estimateGasLimit
+        else {
+            return
+        }
+
+        guard let address = try? Address(hex: addressHex) else {
+            show(error: "Invalid address")
+            return
+        }
+
+        guard let amountString = amountTextField.text, let amount = Decimal(string: amountString) else {
+            show(error: "Invalid amount")
+            return
+        }
+
+        Task { [weak self, adapter, gasPrice] in
+            do {
+                try await adapter.sendLock(to: address, amount: amount, gasLimit: estimateGasLimit, gasPrice: gasPrice, lockDay: 30)
                 self?.handleSuccess(address: address, amount: amount)
             } catch {
                 self?.show(error: "Send failed: \(error)")

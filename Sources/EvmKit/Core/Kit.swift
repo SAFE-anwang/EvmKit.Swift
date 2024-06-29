@@ -4,6 +4,8 @@ import Foundation
 import HdWalletKit
 import HsCryptoKit
 import HsToolKit
+import web3swift
+import Web3Core
 
 public class Kit {
     public static let defaultGasLimit = 21000
@@ -162,9 +164,20 @@ public extension Kit {
     func tagTokens() -> [TagToken] {
         transactionManager.tagTokens()
     }
-
-    func send(rawTransaction: RawTransaction, signature: Signature) async throws -> FullTransaction {
-        let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature)
+    
+    func safe4LockRawTransaction(transactionData: TransactionData, gasPrice: GasPrice, gasLimit: Int, lockDay: Int, nonce: Int? = nil) async throws -> RawTransaction {
+        let transactionInput = Safe4DepositMethod(owner: transactionData.to, lockDay: BigUInt(lockDay)).encodedABI()
+        let resolvedNonce: Int
+        if let nonce {
+            resolvedNonce = nonce
+        } else {
+            resolvedNonce = try await blockchain.nonce(defaultBlockParameter: .pending)
+        }
+        return RawTransaction(gasPrice: gasPrice, gasLimit: gasLimit, to: transactionData.to, value: transactionData.value, data: transactionInput, nonce: resolvedNonce)
+     }
+    
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int? = nil) async throws -> FullTransaction {
+        let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey, lockDay: lockDay)
         let fullTransactions = transactionManager.handle(transactions: [transaction])
         return fullTransactions[0]
     }
@@ -289,24 +302,34 @@ extension Kit {
 
         let syncer: IRpcSyncer
         let reachabilityManager = ReachabilityManager()
-
         switch rpcSource {
         case let .http(urls, auth):
             let apiProvider = NodeApiProvider(networkManager: networkManager, urls: urls, auth: auth)
-            syncer = ApiRpcSyncer(rpcApiProvider: apiProvider, reachabilityManager: reachabilityManager, syncInterval: chain.syncInterval)
+            if chain == .SafeFour {
+                syncer = ApiRpcSyncerSafe4(rpcApiProvider: apiProvider, reachabilityManager: reachabilityManager, syncInterval: chain.syncInterval)
+            }else {
+                syncer = ApiRpcSyncer(rpcApiProvider: apiProvider, reachabilityManager: reachabilityManager, syncInterval: chain.syncInterval)
+            }
         case let .webSocket(url, auth):
             let socket = WebSocket(url: url, reachabilityManager: reachabilityManager, auth: auth, logger: logger)
             syncer = WebSocketRpcSyncer.instance(socket: socket, logger: logger)
         }
-
-        let transactionBuilder = TransactionBuilder(chain: chain, address: address)
         let transactionProvider: ITransactionProvider = transactionProvider(transactionSource: transactionSource, address: address, logger: logger)
 
         let storage: IApiStorage = try ApiStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "api-\(uniqueId)")
-        let blockchain = RpcBlockchain.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, logger: logger)
+        var blockchain: IBlockchain
+        if chain == Chain.SafeFour, case let .http(urls, _) = rpcSource {
+            let transactionBuilder = Safe4TransactionBuilder(chain: chain, address: address)
+            blockchain = RpcBlockchainSafe4.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, urls: urls, chain: chain, logger: logger)
+        }else {
+            let transactionBuilder = TransactionBuilder(chain: chain, address: address)
+            blockchain = RpcBlockchain.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, logger: logger)
+
+        }
 
         let transactionStorage = try TransactionStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "transactions-\(uniqueId)")
         let transactionSyncerStateStorage = try TransactionSyncerStateStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "transaction-syncer-states-\(uniqueId)")
+        let safe4TransactionSyncerStateStorage = try TransactionSyncerStateStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "safe4-transaction-syncer-states-\(uniqueId)")
 
         let ethereumTransactionSyncer = EthereumTransactionSyncer(provider: transactionProvider, storage: transactionSyncerStateStorage)
         let internalTransactionSyncer = InternalTransactionSyncer(provider: transactionProvider, storage: transactionStorage)
@@ -316,6 +339,10 @@ extension Kit {
 
         transactionSyncManager.add(syncer: ethereumTransactionSyncer)
         transactionSyncManager.add(syncer: internalTransactionSyncer)
+        if chain == Chain.SafeFour {
+            let safe4TransactionSyncer = Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage)
+            transactionSyncManager.add(syncer: safe4TransactionSyncer)
+        }
 
         let eip20Storage = try Eip20Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "eip20-\(uniqueId)")
 
@@ -328,7 +355,10 @@ extension Kit {
         blockchain.delegate = kit
 
         decorationManager.add(transactionDecorator: EthereumDecorator(address: address))
-
+        if (chain == Chain.SafeFour) {
+            decorationManager.add(transactionDecorator: Safe4Decorator(address: address))
+            kit.add(methodDecorator: Safe4MethodDecorator(contractMethodFactories: Safe4ContractMethodFactories()))
+         }
         return kit
     }
 

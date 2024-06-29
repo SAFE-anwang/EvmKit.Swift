@@ -106,4 +106,11 @@ public extension TransactionSource {
             type: .etherscan(apiBaseUrl: "https://api.ftmscan.com", txBaseUrl: "https://ftmscan.com", apiKey: apiKey)
         )
     }
+    
+    static func safeFourscan(apiKey: String) -> TransactionSource {
+        TransactionSource(
+            name: "safe4",
+            type: .etherscan(apiBaseUrl: "https://safe4.anwang.com", txBaseUrl: "https://safe4.anwang.com", apiKey: apiKey)
+        )
+    }
 }

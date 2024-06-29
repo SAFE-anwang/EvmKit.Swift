@@ -52,11 +52,11 @@ extension EthereumAdapter {
     }
 
     var name: String {
-        "Ethereum"
+        "safe4"
     }
 
     var coin: String {
-        "ETH"
+        "SAFE4"
     }
 
     var lastBlockHeight: Int? {
@@ -131,7 +131,20 @@ extension EthereumAdapter {
         let rawTransaction = try await evmKit.fetchRawTransaction(transactionData: transactionData, gasPrice: gasPrice, gasLimit: gasLimit)
         let signature = try signer.signature(rawTransaction: rawTransaction)
 
-        _ = try await evmKit.send(rawTransaction: rawTransaction, signature: signature)
+        _ = try await evmKit.send(rawTransaction: rawTransaction, signature: signature, privateKey: signer.privateKey)
+    }
+    
+    func sendLock(to: Address, amount: Decimal, gasLimit: Int, gasPrice: GasPrice, lockDay: Int) async throws {
+        guard let signer else {
+            throw SendError.noSigner
+        }
+        let amount = BigUInt(amount.hs.roundedString(decimal: decimal))!
+        var transactionData = evmKit.transferTransactionData(to: to, value: amount)
+        transactionData.update(lockTime: lockDay)
+        let rawTransaction = try await evmKit.safe4LockRawTransaction(transactionData: transactionData, gasPrice: gasPrice, gasLimit: gasLimit, lockDay: lockDay)
+        let signature = try signer.signature(rawTransaction: rawTransaction)
+
+        _ = try await evmKit.send(rawTransaction: rawTransaction, signature: signature, privateKey: signer.privateKey, lockDay: lockDay)
     }
 }
 

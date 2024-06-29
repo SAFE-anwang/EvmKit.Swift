@@ -34,6 +34,7 @@ class ApiStorage {
                 t.column(AccountState.Columns.primaryKey.name, .text).notNull()
                 t.column(AccountState.Columns.balance.name, .text).notNull()
                 t.column(AccountState.Columns.nonce.name, .integer).notNull()
+                t.column(AccountState.Columns.timeLockBalance.name, .text).notNull()
 
                 t.primaryKey([AccountState.Columns.primaryKey.name], onConflict: .replace)
             }

@@ -8,11 +8,12 @@ public class AccountState: Record {
 
     public let balance: BigUInt
     public let nonce: Int
-
-    init(balance: BigUInt, nonce: Int) {
+    public let timeLockBalance: BigUInt
+    
+    init(balance: BigUInt, nonce: Int, timeLockBalance: BigUInt = .zero) {
         self.balance = balance
         self.nonce = nonce
-
+        self.timeLockBalance = timeLockBalance
         super.init()
     }
 
@@ -24,12 +25,13 @@ public class AccountState: Record {
         case primaryKey
         case balance
         case nonce
+        case timeLockBalance
     }
 
     required init(row: Row) throws {
         balance = row[Columns.balance]
         nonce = row[Columns.nonce]
-
+        timeLockBalance = row[Columns.timeLockBalance]
         try super.init(row: row)
     }
 
@@ -37,11 +39,12 @@ public class AccountState: Record {
         container[Columns.primaryKey] = primaryKey
         container[Columns.balance] = balance
         container[Columns.nonce] = nonce
+        container[Columns.timeLockBalance] = timeLockBalance
     }
 }
 
 extension AccountState: Equatable {
     public static func == (lhs: AccountState, rhs: AccountState) -> Bool {
-        lhs.balance == rhs.balance && lhs.nonce == lhs.nonce
+        lhs.balance == rhs.balance && lhs.nonce == rhs.nonce && lhs.timeLockBalance == rhs.timeLockBalance
     }
 }

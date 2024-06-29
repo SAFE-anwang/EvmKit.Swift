@@ -26,7 +26,13 @@ class TransactionManager {
 
         let mergedTransactions = transactions.map { transaction in
             if let existingTransaction = existingTransactionMap[transaction.hash] {
-                return TransactionSyncManager.merge(lhsTransaction: transaction, rhsTransaction: existingTransaction)
+                let isLocked: Bool
+                if let lockDay = transaction.lockDay, lockDay > 0 {
+                    isLocked = transaction.from != userAddress && transaction.to == userAddress
+                }else {
+                    isLocked  = false
+                }
+                return TransactionSyncManager.merge(lhsTransaction: transaction, rhsTransaction: existingTransaction, isLocked: isLocked)
             } else {
                 return transaction
             }

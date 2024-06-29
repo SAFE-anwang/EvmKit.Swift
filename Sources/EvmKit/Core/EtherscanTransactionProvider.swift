@@ -134,6 +134,20 @@ extension EtherscanTransactionProvider: ITransactionProvider {
         let array = try await fetch(params: params)
         return array.compactMap { try? ProviderEip1155Transaction(JSON: $0) }
     }
+    
+    func safe4AccountManagerTransactions(startBlock: Int) async throws -> [Safe4AccountManagerTransaction] {
+        let params: [String: Any] = [
+            "module": "account",
+            "action": "accountmanager",
+            "address": address.hex,
+            "startblock": startBlock,
+            "sort": "desc",
+        ]
+
+        let array = try await fetch(params: params)
+
+        return array.compactMap { try? Safe4AccountManagerTransaction(JSON: $0) }
+    }
 }
 
 extension EtherscanTransactionProvider {

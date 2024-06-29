@@ -3,7 +3,7 @@ import Foundation
 import HsCryptoKit
 
 class EthSigner {
-    private let privateKey: Data
+    let privateKey: Data
 
     init(privateKey: Data) {
         self.privateKey = privateKey

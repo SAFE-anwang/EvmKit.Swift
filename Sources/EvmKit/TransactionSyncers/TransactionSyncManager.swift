@@ -41,11 +41,11 @@ class TransactionSyncManager {
         transactionManager.handle(transactions: Array(dictionary.values), initial: initial)
     }
 
-    static func merge(lhsTransaction lhs: Transaction, rhsTransaction rhs: Transaction) -> Transaction {
+    static func merge(lhsTransaction lhs: Transaction, rhsTransaction rhs: Transaction, isLocked: Bool = false) -> Transaction {
         Transaction(
             hash: lhs.hash,
             timestamp: lhs.timestamp,
-            isFailed: lhs.isFailed || rhs.isFailed,
+            isFailed: isLocked ? lhs.isFailed : rhs.isFailed,
             blockNumber: lhs.blockNumber ?? rhs.blockNumber,
             transactionIndex: lhs.transactionIndex ?? rhs.transactionIndex,
             from: lhs.from ?? rhs.from,
@@ -58,7 +58,9 @@ class TransactionSyncManager {
             maxPriorityFeePerGas: lhs.maxPriorityFeePerGas ?? rhs.maxPriorityFeePerGas,
             gasLimit: lhs.gasLimit ?? rhs.gasLimit,
             gasUsed: lhs.gasUsed ?? rhs.gasUsed,
-            replacedWith: lhs.replacedWith ?? rhs.replacedWith
+            replacedWith: lhs.replacedWith ?? rhs.replacedWith,
+            lockDay: lhs.lockDay ?? rhs.lockDay
+            
         )
     }
 
