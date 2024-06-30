@@ -15,8 +15,7 @@ class RpcBlockchainSafe4 {
     private let syncer: IRpcSyncer
     private let transactionBuilder: Safe4TransactionBuilder
     private var logger: Logger?
-    private let urls: [URL]
-    private let chain: Chain
+    private let safe4Provider: Safe4Provider
     
     private(set) var syncState: SyncState = .notSynced(error: Kit.SyncError.notStarted) {
         didSet {
@@ -28,21 +27,20 @@ class RpcBlockchainSafe4 {
 
     private var synced = false
 
-    init(address: Address, storage: IApiStorage, syncer: IRpcSyncer, transactionBuilder: Safe4TransactionBuilder, urls: [URL], chain: Chain, logger: Logger? = nil) {
+    init(address: Address, storage: IApiStorage, syncer: IRpcSyncer, transactionBuilder: Safe4TransactionBuilder, safe4Provider: Safe4Provider, logger: Logger? = nil) {
         self.address = address
         self.storage = storage
         self.syncer = syncer
         self.transactionBuilder = transactionBuilder
+        self.safe4Provider = safe4Provider
         self.logger = logger
-        self.urls = urls
-        self.chain = chain
+    
     }
-
+    
     private func syncLastBlockHeight() {
-        Task { [weak self] in
-            let web3 = try await self?.web3Instance()
-            let lastBlockHeight = try await web3!.eth.blockNumber()
-            self?.onUpdate(lastBlockHeight: Int(lastBlockHeight))
+        Task { [weak self, syncer] in
+            let lastBlockHeight = try await syncer.fetch(rpc: BlockNumberJsonRpc())
+            self?.onUpdate(lastBlockHeight: lastBlockHeight)
         }.store(in: &tasks)
     }
 
@@ -77,6 +75,13 @@ extension RpcBlockchainSafe4: IRpcSyncerDelegate {
         // report to whom???
     }
 }
+extension RpcBlockchainSafe4 {
+    
+    // withdraw account all locked
+    func withdraw(privateKey: Data) {
+        safe4Provider.withdraw(privateKey: privateKey)
+    }
+}
 
 extension RpcBlockchainSafe4: IBlockchain {
     var source: String {
@@ -105,13 +110,12 @@ extension RpcBlockchainSafe4: IBlockchain {
     }
 
     func syncAccountState() {
-        Task { [weak self, syncer, address] in
+        Task { [weak self, syncer, address, safe4Provider] in
             do {
                 
                 async let balance = try syncer.fetch(rpc: GetBalanceJsonRpc(address: address, defaultBlockParameter: .latest))
                 async let nonce = try syncer.fetch(rpc: GetTransactionCountJsonRpc(address: address, defaultBlockParameter: .latest))
-                let web3 = try await self?.web3Instance()
-                async let lockedAmount = try web3!.safe4.accountmanager.getLockedAmount( Web3Core.EthereumAddress(address.hex)!).amount
+                async let lockedAmount = try safe4Provider.getLockedAmount(address: address)
                 let accountState = try await AccountState(balance: balance, nonce: nonce, timeLockBalance: lockedAmount)
                 self?.onUpdate(accountState: accountState)
                 self?.syncState = .synced
@@ -129,19 +133,6 @@ extension RpcBlockchainSafe4: IBlockchain {
             }
         }.store(in: &tasks)
     }
-    
-    private func web3Instance(urlIndex: Int = 0) async throws -> Web3 {
-        do {
-            return try await Web3.new( urls[urlIndex], network: Networks.Custom(networkID: BigUInt(chain.id)))
-        } catch {
-            let nextIndex = urlIndex + 1
-            if nextIndex < urls.count {
-                return try await  web3Instance(urlIndex:nextIndex)
-            } else {
-                throw error
-            }
-        }
-    }
 
     var lastBlockHeight: Int? {
         storage.lastBlockHeight
@@ -156,10 +147,8 @@ extension RpcBlockchainSafe4: IBlockchain {
     }
 
     func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int? = nil) async throws -> Transaction {
-        let web3 = try await web3Instance()
         if let days = lockDay {
-            let to = Web3Core.EthereumAddress(rawTransaction.to.hex)!
-            let hash = try await web3.safe4.accountmanager.deposit(privateKey: privateKey, value: rawTransaction.value, to: to, lockDay: BigUInt(days))
+            let hash = try await safe4Provider.deposit(privateKey: privateKey, value: rawTransaction.value, to: rawTransaction.to, lockDay: BigUInt(days))
             return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: days, hash: hash.hs.hexData ?? Data())
         }else {
             let encoded = transactionBuilder.encode(rawTransaction: rawTransaction, signature: signature)
@@ -204,8 +193,8 @@ extension RpcBlockchainSafe4 {
 }
 
 extension RpcBlockchainSafe4 {
-    static func instance(address: Address, storage: IApiStorage, syncer: IRpcSyncer, transactionBuilder: Safe4TransactionBuilder, urls: [URL], chain: Chain, logger: Logger? = nil) -> RpcBlockchainSafe4 {
-        let blockchain = RpcBlockchainSafe4(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, urls: urls, chain: chain, logger: logger)
+    static func instance(address: Address, storage: IApiStorage, syncer: IRpcSyncer, transactionBuilder: Safe4TransactionBuilder, safe4Provider: Safe4Provider, logger: Logger? = nil) -> RpcBlockchainSafe4 {
+        let blockchain = RpcBlockchainSafe4(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, safe4Provider: safe4Provider, logger: logger)
         syncer.delegate = blockchain
         return blockchain
     }

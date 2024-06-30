@@ -181,6 +181,12 @@ public extension Kit {
         let fullTransactions = transactionManager.handle(transactions: [transaction])
         return fullTransactions[0]
     }
+    
+    func withdraw(privateKey: Data) {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            blockchain.withdraw(privateKey: privateKey)
+        }
+    }
 
     var debugInfo: String {
         var lines = [String]()
@@ -320,7 +326,8 @@ extension Kit {
         var blockchain: IBlockchain
         if chain == Chain.SafeFour, case let .http(urls, _) = rpcSource {
             let transactionBuilder = Safe4TransactionBuilder(chain: chain, address: address)
-            blockchain = RpcBlockchainSafe4.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, urls: urls, chain: chain, logger: logger)
+            let safe4Provider = Safe4Provider(chain: chain, urls: urls)
+            blockchain = RpcBlockchainSafe4.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, safe4Provider: safe4Provider, logger: logger)
         }else {
             let transactionBuilder = TransactionBuilder(chain: chain, address: address)
             blockchain = RpcBlockchain.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, logger: logger)

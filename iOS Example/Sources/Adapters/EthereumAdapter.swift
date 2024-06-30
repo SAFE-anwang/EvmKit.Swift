@@ -8,9 +8,13 @@ class EthereumAdapter {
     private let signer: Signer?
     private let decimal = 18
 
-    init(evmKit: Kit, signer: Signer?) {
+    init(evmKit: Kit, signer: Signer?) async {
         self.evmKit = evmKit
         self.signer = signer
+        
+        if evmKit.chain == .SafeFour, let signer {
+            evmKit.withdraw(privateKey: signer.privateKey)
+        }
     }
 
     private func transactionRecord(fullTransaction: FullTransaction) -> TransactionRecord {

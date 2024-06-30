@@ -97,7 +97,7 @@ class SendController: UIViewController {
 
         ethLabel.font = .systemFont(ofSize: 13)
         ethLabel.textColor = .black
-        ethLabel.text = "ETH"
+        ethLabel.text = "SAFE4"
 
         view.addSubview(gasPriceLabel)
         gasPriceLabel.snp.makeConstraints { make in
@@ -218,7 +218,7 @@ class SendController: UIViewController {
 
         Task { [weak self, adapter, gasPrice] in
             do {
-                try await adapter.sendLock(to: address, amount: amount, gasLimit: estimateGasLimit, gasPrice: gasPrice, lockDay: 30)
+                try await adapter.sendLock(to: address, amount: amount, gasLimit: estimateGasLimit, gasPrice: gasPrice, lockDay: 1)
                 self?.handleSuccess(address: address, amount: amount)
             } catch {
                 self?.show(error: "Send failed: \(error)")
@@ -261,7 +261,7 @@ class SendController: UIViewController {
 
     @MainActor
     private func handleSuccess(address: Address, amount: Decimal) {
-        addressTextField.text = ""
+//        addressTextField.text = ""
         amountTextField.text = ""
 
         let alert = UIAlertController(title: "Success", message: "\(amount.description) sent to \(address)", preferredStyle: .alert)

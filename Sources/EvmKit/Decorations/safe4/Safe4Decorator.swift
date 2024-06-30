@@ -1,3 +1,4 @@
+import Foundation
 import BigInt
 
 class Safe4Decorator {
@@ -20,7 +21,14 @@ extension Safe4Decorator: ITransactionDecorator {
 
         if let contractMethod, contractMethod is Safe4DepositMethod {
             if from == address {
-                return  Safe4DepositOutgoingDecoration(to: to, value: value, sentToSelf: to == address)
+                
+                let sentToSelf : Bool
+                if let address = address(input: contractMethod.encodedABI()) {
+                    sentToSelf = address == from
+                }else {
+                    sentToSelf = to == address
+                }
+                return  Safe4DepositOutgoingDecoration(to: to, value: value, sentToSelf: sentToSelf)
             }
 
             if to == address {
@@ -33,5 +41,12 @@ extension Safe4Decorator: ITransactionDecorator {
         }
 
         return nil
+    }
+    
+    private func address(input: Data?) -> Address? {
+        guard let input else { return nil }
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: Data(input.suffix(from: 4)), argumentTypes: [EvmKit.Address.self])
+        let owner = parsedArguments[0] as? EvmKit.Address
+        return owner
     }
 }
