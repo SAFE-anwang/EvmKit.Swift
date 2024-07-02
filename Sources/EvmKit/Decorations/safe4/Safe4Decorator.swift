@@ -36,6 +36,12 @@ extension Safe4Decorator: ITransactionDecorator {
             }
         }
         
+        if let contractMethod, contractMethod is Safe4WithdrawMethod {
+            if to == address {
+                return  Safe4WithdrawDecoration(from: from, value: value)
+            }
+        }
+        
         if (isLock == true && to == address) {
             return Safe4DepositIncomingDecoration(from: from, value: value)
         }

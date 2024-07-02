@@ -4,7 +4,8 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
     override init() {
         super.init()
         register(factories: [
-            DepositMethodFactory()
+            DepositMethodFactory(),
+            Safe4WithdrawMethodFactory()
         ])
     }
 }
