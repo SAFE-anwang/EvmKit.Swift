@@ -1,5 +1,7 @@
 import Foundation
 import BigInt
+import web3swift
+import Web3Core
 
 class Safe4Decorator {
     private let address: Address
@@ -37,8 +39,8 @@ extension Safe4Decorator: ITransactionDecorator {
         }
         
         if let contractMethod, contractMethod is Safe4WithdrawMethod {
-            if to == address {
-                return  Safe4WithdrawDecoration(from: from, value: value)
+            if to.hex == Safe4ContractAddress.AccountManagerContractAddr {
+                return  Safe4WithdrawDecoration(from: to, value: value)
             }
         }
         

@@ -8,7 +8,7 @@ class EthereumAdapter {
     private let signer: Signer?
     private let decimal = 18
 
-    init(evmKit: Kit, signer: Signer?) async {
+    init(evmKit: Kit, signer: Signer?) {
         self.evmKit = evmKit
         self.signer = signer
         

@@ -49,19 +49,19 @@ public struct Safe4AccountManagerTransaction: ImmutableMappable {
     let to: Address
     let amount: BigUInt
     let action: String
-    let lockId: Int
-    let lockDay: Int
+    let lockId: String
+    let lockDay: Int?
     
     public init(map: Map) throws {
 
-        blockNumber = try map.value("blockNumber")//, using: StringIntTransform())
+        action = try map.value("action")
+        lockId = try map.value("lockId")
+        lockDay = try? map.value("lockDay", using: StringIntTransform())
+        blockNumber = try map.value("blockNumber")
         timestamp = try map.value("timeStamp", using: StringIntTransform())
         hash = try map.value("hash", using: HexDataTransform())
         from = try map.value("from", using: HexAddressTransform())
         to = try map.value("to", using: HexAddressTransform())
         amount = try map.value("amount", using: StringBigUIntTransform())
-        action = try map.value("action")
-        lockId = try map.value("lockId", using: StringIntTransform())
-        lockDay = try map.value("lockDay", using: StringIntTransform())
     }
 }

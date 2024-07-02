@@ -33,9 +33,7 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
 
             handle(providerTransactions: transactions)
 
-            let array = transactions
-                .filter{ $0.from != address && $0.to == address}
-                .map { tx -> Transaction in
+            let array = transactions.map { tx -> Transaction in
 
                 return Transaction(
                     hash: tx.hash,
