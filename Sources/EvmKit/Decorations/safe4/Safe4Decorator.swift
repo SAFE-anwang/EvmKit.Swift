@@ -39,9 +39,8 @@ extension Safe4Decorator: ITransactionDecorator {
         }
         
         if let contractMethod, contractMethod is Safe4WithdrawMethod {
-            if to.hex == Safe4ContractAddress.AccountManagerContractAddr {
-                return  Safe4WithdrawDecoration(from: to, value: value)
-            }
+            let from = try! Address(hex: Safe4ContractAddress.AccountManagerContractAddr)
+            return  Safe4WithdrawDecoration(from: from, value: value)
         }
         
         if (isLock == true && to == address) {
