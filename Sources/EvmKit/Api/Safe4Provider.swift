@@ -28,7 +28,7 @@ class Safe4Provider {
     
     func getLockedAmount(address: Address) async throws -> BigUInt {
         let web3 = try await web3Instance()
-        return try await web3.safe4.accountmanager.getLockedAmount( Web3Core.EthereumAddress(address.hex)!).amount
+        return try await web3.safe4.accountmanager.getTotalAmount( Web3Core.EthereumAddress(address.hex)!).amount
     }
     
     func deposit(privateKey: Data, value: BigUInt, to: Address, lockDay: BigUInt) async throws -> String {
