@@ -30,11 +30,16 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
 
         do {
             let transactions = try await provider.safe4AccountManagerTransactions(startBlock: lastBlockNumber + 1)
-
+            let tempArray = transactions.filter{$0.action != "SafeWithdraw"}
+            let duplicates = findDuplicates(in: tempArray)
             handle(providerTransactions: transactions)
 
             let array = transactions.map { tx -> Transaction in
 
+                var  total = tx.amount
+                if let num = duplicates[tx.hash] {
+                    total = total * BigUInt(num)
+                }
                 return Transaction(
                     hash: tx.hash,
                     timestamp: tx.timestamp,
@@ -42,7 +47,7 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
                     blockNumber: tx.blockNumber,
                     from: tx.from,
                     to: tx.to,
-                    value: tx.amount,
+                    value: total,//tx.amount,
                     lockDay: tx.lockDay
                 )
             }
@@ -52,4 +57,14 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
             return ([], initial)
         }
     }
+    
+    func findDuplicates(in array: [Safe4AccountManagerTransaction]) -> [Data: Int] {
+        var elementCount: [Data: Int] = [:]
+        for element in array {
+            elementCount[element.hash, default: 0] += 1
+        }
+        let duplicates = elementCount.filter { $0.value > 1 }
+        return duplicates
+    }
 }
+
