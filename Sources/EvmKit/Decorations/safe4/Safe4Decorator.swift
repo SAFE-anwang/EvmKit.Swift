@@ -34,7 +34,7 @@ extension Safe4Decorator: ITransactionDecorator {
             }
 
             if to == address {
-                return  Safe4DepositIncomingDecoration(from: from, value: value)
+                return Safe4DepositIncomingDecoration(from: from, value: value)
             }
         }
         
@@ -45,6 +45,18 @@ extension Safe4Decorator: ITransactionDecorator {
         
         if (isLock == true && to == address) {
             return Safe4DepositIncomingDecoration(from: from, value: value)
+        }
+        
+        if let contractMethod, contractMethod is Safe4RedeemAvailableMethod {
+            return Safe4RedeemDecoration(from: from, value: value)
+        }
+
+        if let contractMethod, contractMethod is Safe4RedeemLockedMethod {
+            return Safe4RedeemDecoration(from: from, value: value)
+        }
+        
+        if let contractMethod, contractMethod is Safe4RedeemMasterNodeMethod {
+            return Safe4RedeemDecoration(from: from, value: value)
         }
 
         return nil
