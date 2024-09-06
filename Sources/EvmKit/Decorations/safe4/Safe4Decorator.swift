@@ -13,6 +13,19 @@ class Safe4Decorator {
 
 extension Safe4Decorator: ITransactionDecorator {
     public func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions _: [InternalTransaction], eventInstances _: [ContractEventInstance], isLock: Bool) -> TransactionDecoration? {
+
+        if let contractMethod, contractMethod is Safe4RedeemAvailableMethod {
+            return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
+        }
+
+        if let contractMethod, contractMethod is Safe4RedeemLockedMethod {
+            return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
+        }
+        
+        if let contractMethod, contractMethod is Safe4RedeemMasterNodeMethod {
+            return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
+        }
+        
         guard let from, let value else {
             return nil
         }
@@ -47,17 +60,7 @@ extension Safe4Decorator: ITransactionDecorator {
             return Safe4DepositIncomingDecoration(from: from, value: value)
         }
         
-        if let contractMethod, contractMethod is Safe4RedeemAvailableMethod {
-            return Safe4RedeemDecoration(from: from, value: value)
-        }
 
-        if let contractMethod, contractMethod is Safe4RedeemLockedMethod {
-            return Safe4RedeemDecoration(from: from, value: value)
-        }
-        
-        if let contractMethod, contractMethod is Safe4RedeemMasterNodeMethod {
-            return Safe4RedeemDecoration(from: from, value: value)
-        }
 
         return nil
     }
