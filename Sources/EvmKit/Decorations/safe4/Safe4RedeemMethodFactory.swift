@@ -26,3 +26,30 @@ class Safe4RedeemMasterNodeMethodFactory: IContractMethodFactory {
         return Safe4RedeemMasterNodeMethod()
     }
 }
+
+class Safe4ProposalVoteMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4ProposalVoteMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4ProposalVoteMethod()
+    }
+}
+
+class Safe4SuperNodeVoteMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4SuperNodeVoteMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4SuperNodeVoteMethod()
+    }
+}
+
+class Safe4NodeStateUploadMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4NodeStateUploadMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4NodeStateUploadMethod()
+    }
+}

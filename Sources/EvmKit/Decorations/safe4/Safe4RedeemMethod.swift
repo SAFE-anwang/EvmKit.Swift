@@ -39,3 +39,41 @@ class Safe4RedeemMasterNodeMethod: ContractMethod {
 }
 
 
+class Safe4ProposalVoteMethod: ContractMethod {
+        
+    override var methodId: Data {
+        "0xb384abef".hs.hexData ?? Data()
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class Safe4SuperNodeVoteMethod: ContractMethod {
+        
+    override var methodId: Data {
+        "0x092c8749".hs.hexData ?? Data()
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class Safe4NodeStateUploadMethod: ContractMethod {
+    
+    override var methodId: Data {
+        "0xa6aa19d2".hs.hexData ?? Data()
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
