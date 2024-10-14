@@ -27,18 +27,18 @@ extension Safe4Decorator: ITransactionDecorator {
         }
         
         if let contractMethod, contractMethod is Safe4ProposalVoteMethod {
-            let voteAddress = voteAddress(input: contractMethod.encodedABI())
-            return Safe4NodeVoteDecoration(from: from, to: voteAddress, contract: to, value: value ?? 0)
+            let dstAddr = (contractMethod as? Safe4ProposalVoteMethod)?.dstAddr
+            return Safe4NodeVoteDecoration(from: from, to: dstAddr, contract: to, value: value ?? 0)
         }
         
         if let contractMethod, contractMethod is Safe4SuperNodeLockVoteMethod {
-            let voteAddress = voteAddress(input: contractMethod.encodedABI())
-            return Safe4NodeVoteDecoration(from: from, to: voteAddress, contract: to, value: value ?? 0)
+            let dstAddr = (contractMethod as? Safe4SuperNodeLockVoteMethod)?.dstAddr
+            return Safe4NodeVoteDecoration(from: from, to: dstAddr, contract: to, value: value ?? 0)
         }
         
         if let contractMethod, contractMethod is Safe4SuperNodeVoteMethod {
-            let voteAddress = voteAddress(input: contractMethod.encodedABI())
-            return Safe4NodeVoteDecoration(from: from, to: voteAddress, contract: to, value: value ?? 0)
+            let dstAddr = (contractMethod as? Safe4SuperNodeVoteMethod)?.dstAddr
+            return Safe4NodeVoteDecoration(from: from, to: dstAddr, contract: to, value: value ?? 0)
         }
         
         if let contractMethod, contractMethod is Safe4NodeDeployMethod {
@@ -96,13 +96,4 @@ extension Safe4Decorator {
         let owner = parsedArguments[0] as? EvmKit.Address
         return owner
     }
-    
-    private func voteAddress(input: Data?) -> Address? {
-        guard let input else { return nil }
-        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: Data(input.suffix(from: 4)), argumentTypes: [Bool.self, EvmKit.Address.self])
-        let isVote = parsedArguments[0] as? Bool
-        let address = parsedArguments[1] as? EvmKit.Address
-        return address
-    }
-
 }

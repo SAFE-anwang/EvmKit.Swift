@@ -11,7 +11,9 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
             Safe4RedeemMasterNodeMethodFactory(),
             Safe4ProposalVoteMethodFactory(),
             Safe4SuperNodeVoteMethodFactory(),
-            Safe4NodeStateUploadMethodFactory()
+            Safe4NodeStateUploadMethodFactory(),
+            Safe4SuperNodeLockVoteMethodFactory(),
+            Safe4NodeDeployMethodFactory()
         ])
     }
 }

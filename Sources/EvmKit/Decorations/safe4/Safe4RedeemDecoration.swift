@@ -4,7 +4,7 @@ import BigInt
 public class Safe4RedeemDecoration: TransactionDecoration {
     public let from: Address?
     public let to: Address?
-    public let value: BigUInt?
+    public let value: BigUInt
 
     init(from: Address?, to: Address?, value: BigUInt) {
         self.from = from

@@ -40,29 +40,63 @@ class Safe4RedeemMasterNodeMethod: ContractMethod {
 
 
 class Safe4ProposalVoteMethod: ContractMethod {
-        
+    static let methodId: Data = "0xb384abef".hs.hexData ?? Data()
+
     override var methodId: Data {
-        "0xb384abef".hs.hexData ?? Data()
+        Self.methodId
     }
     
-    override init() {}
+    let isVote: BigUInt
+    let dstAddr: Address
+    
+    init(isVote: BigUInt, dstAddr: Address) {
+        self.isVote = isVote
+        self.dstAddr = dstAddr
+    }
 
     override var methodSignature: String { "" }
 
-    override var arguments: [Any] {[]}
+    override var arguments: [Any] {[isVote, dstAddr]}
 }
 
 class Safe4SuperNodeVoteMethod: ContractMethod {
-        
+    static let methodId: Data = "0x092c8749".hs.hexData ?? Data()
+    
     override var methodId: Data {
-        "0x092c8749".hs.hexData ?? Data()
+        Self.methodId
     }
     
-    override init() {}
+    let isVote: BigUInt
+    let dstAddr: Address
+    
+    init(isVote: BigUInt, dstAddr: Address) {
+        self.isVote = isVote
+        self.dstAddr = dstAddr
+    }
 
     override var methodSignature: String { "" }
 
-    override var arguments: [Any] {[]}
+    override var arguments: [Any] {[isVote, dstAddr]}
+}
+
+class Safe4SuperNodeLockVoteMethod: ContractMethod {
+    static let methodId: Data = "0x03c4c7f3".hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    let isVote: BigUInt
+    let dstAddr: Address
+    
+    init(isVote: BigUInt, dstAddr: Address) {
+        self.isVote = isVote
+        self.dstAddr = dstAddr
+    }
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[isVote, dstAddr]}
 }
 
 class Safe4NodeStateUploadMethod: ContractMethod {
@@ -78,23 +112,11 @@ class Safe4NodeStateUploadMethod: ContractMethod {
     override var arguments: [Any] {[]}
 }
 
-class Safe4SuperNodeLockVoteMethod: ContractMethod {
-    
-    override var methodId: Data {
-        "0x03c4c7f3".hs.hexData ?? Data()
-    }
-    
-    override init() {}
-
-    override var methodSignature: String { "" }
-
-    override var arguments: [Any] {[]}
-}
-
 class Safe4NodeDeployMethod: ContractMethod {
-    
+    static let methodId: Data = "0x60806040".hs.hexData ?? Data()
+
     override var methodId: Data {
-        "0x60806040".hs.hexData ?? Data()
+        Self.methodId
     }
     
     override init() {}
