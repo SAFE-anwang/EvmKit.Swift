@@ -77,3 +77,29 @@ class Safe4NodeStateUploadMethod: ContractMethod {
 
     override var arguments: [Any] {[]}
 }
+
+class Safe4SuperNodeLockVoteMethod: ContractMethod {
+    
+    override var methodId: Data {
+        "0x03c4c7f3".hs.hexData ?? Data()
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class Safe4NodeDeployMethod: ContractMethod {
+    
+    override var methodId: Data {
+        "0x60806040".hs.hexData ?? Data()
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}

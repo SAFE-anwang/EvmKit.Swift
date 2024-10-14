@@ -26,6 +26,29 @@ extension Safe4Decorator: ITransactionDecorator {
             return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
         }
         
+        if let contractMethod, contractMethod is Safe4ProposalVoteMethod {
+            let voteAddress = voteAddress(input: contractMethod.encodedABI())
+            return Safe4NodeVoteDecoration(from: from, to: voteAddress, contract: to, value: value ?? 0)
+        }
+        
+        if let contractMethod, contractMethod is Safe4SuperNodeLockVoteMethod {
+            let voteAddress = voteAddress(input: contractMethod.encodedABI())
+            return Safe4NodeVoteDecoration(from: from, to: voteAddress, contract: to, value: value ?? 0)
+        }
+        
+        if let contractMethod, contractMethod is Safe4SuperNodeVoteMethod {
+            let voteAddress = voteAddress(input: contractMethod.encodedABI())
+            return Safe4NodeVoteDecoration(from: from, to: voteAddress, contract: to, value: value ?? 0)
+        }
+        
+        if let contractMethod, contractMethod is Safe4NodeDeployMethod {
+            return Safe4NodeVoteDecoration(from: from, to: to, contract: to, value: value ?? 0)
+        }
+        
+        if let contractMethod, contractMethod is Safe4NodeStateUploadMethod {
+            return Safe4NodeVoteDecoration(from: from, to: to, contract: nil, value: value ?? 0)
+        }
+        
         guard let from, let value else {
             return nil
         }
@@ -64,11 +87,22 @@ extension Safe4Decorator: ITransactionDecorator {
 
         return nil
     }
-    
+}
+
+extension Safe4Decorator {
     private func address(input: Data?) -> Address? {
         guard let input else { return nil }
         let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: Data(input.suffix(from: 4)), argumentTypes: [EvmKit.Address.self])
         let owner = parsedArguments[0] as? EvmKit.Address
         return owner
     }
+    
+    private func voteAddress(input: Data?) -> Address? {
+        guard let input else { return nil }
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: Data(input.suffix(from: 4)), argumentTypes: [Bool.self, EvmKit.Address.self])
+        let isVote = parsedArguments[0] as? Bool
+        let address = parsedArguments[1] as? EvmKit.Address
+        return address
+    }
+
 }
