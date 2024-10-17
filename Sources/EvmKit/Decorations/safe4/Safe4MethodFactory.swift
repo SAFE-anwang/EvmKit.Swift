@@ -1,6 +1,24 @@
 import Foundation
 import BigInt
 
+class Safe4WithdrawMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4WithdrawMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4WithdrawMethod()
+    }
+}
+
+class Safe4WithdrawMethodMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4WithdrawMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4WithdrawMethod()
+    }
+}
+
 class Safe4RedeemAvailableMethodFactory: IContractMethodFactory {
     
     let methodId: Data = Safe4RedeemAvailableMethod().methodId
@@ -89,4 +107,40 @@ class Safe4NodeDeployMethodFactory: IContractMethodFactory {
     }
 }
 
+
+class Safe4UpdateDescMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4UpdateDescMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4UpdateDescMethod()
+    }
+}
+
+class Safe4NodeUpdateEnodeMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4NodeUpdateEnodeMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4NodeUpdateEnodeMethod()
+    }
+}
+
+class Safe4NodeUpdateNameMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4NodeUpdateNameMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4NodeUpdateNameMethod()
+    }
+}
+
+class Safe4NodeUpdateAddressMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4NodeUpdateAddressMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4NodeUpdateAddressMethod()
+    }
+}
 

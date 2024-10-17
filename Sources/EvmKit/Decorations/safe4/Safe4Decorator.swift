@@ -13,42 +13,29 @@ class Safe4Decorator {
 
 extension Safe4Decorator: ITransactionDecorator {
     public func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions _: [InternalTransaction], eventInstances _: [ContractEventInstance], isLock: Bool) -> TransactionDecoration? {
-
-        if let contractMethod, contractMethod is Safe4RedeemAvailableMethod {
-            return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
-        }
-
-        if let contractMethod, contractMethod is Safe4RedeemLockedMethod {
-            return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
-        }
         
-        if let contractMethod, contractMethod is Safe4RedeemMasterNodeMethod {
-            return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
+        switch contractMethod {
+            case is Safe4RedeemAvailableMethod,
+                is Safe4RedeemLockedMethod,
+                is Safe4RedeemMasterNodeMethod:
+                return Safe4RedeemDecoration(from: from, to: to, value: value ?? 0)
+                
+            case is Safe4ProposalVoteMethod,
+                is Safe4SuperNodeLockVoteMethod,
+                is Safe4SuperNodeVoteMethod,
+                is Safe4NodeDeployMethod:
+                return Safe4NodeVoteDecoration(from: from, to: to, contract: to, value: value ?? 0)
+                
+            case is Safe4NodeStateUploadMethod,
+                is Safe4UpdateDescMethod,
+                is Safe4NodeUpdateEnodeMethod,
+                is Safe4NodeUpdateNameMethod,
+                is Safe4NodeUpdateAddressMethod:
+                return Safe4NodeUpdateDecoration(from: from, to: to, contract: to, value: value ?? 0)
+                
+            default: ()
         }
-        
-        if let contractMethod, contractMethod is Safe4ProposalVoteMethod {
-            let dstAddr = (contractMethod as? Safe4ProposalVoteMethod)?.dstAddr
-            return Safe4NodeVoteDecoration(from: from, to: dstAddr, contract: to, value: value ?? 0)
-        }
-        
-        if let contractMethod, contractMethod is Safe4SuperNodeLockVoteMethod {
-            let dstAddr = (contractMethod as? Safe4SuperNodeLockVoteMethod)?.dstAddr
-            return Safe4NodeVoteDecoration(from: from, to: dstAddr, contract: to, value: value ?? 0)
-        }
-        
-        if let contractMethod, contractMethod is Safe4SuperNodeVoteMethod {
-            let dstAddr = (contractMethod as? Safe4SuperNodeVoteMethod)?.dstAddr
-            return Safe4NodeVoteDecoration(from: from, to: dstAddr, contract: to, value: value ?? 0)
-        }
-        
-        if let contractMethod, contractMethod is Safe4NodeDeployMethod {
-            return Safe4NodeVoteDecoration(from: from, to: to, contract: to, value: value ?? 0)
-        }
-        
-        if let contractMethod, contractMethod is Safe4NodeStateUploadMethod {
-            return Safe4NodeVoteDecoration(from: from, to: to, contract: nil, value: value ?? 0)
-        }
-        
+            
         guard let from, let value else {
             return nil
         }
@@ -84,7 +71,6 @@ extension Safe4Decorator: ITransactionDecorator {
         }
         
 
-
         return nil
     }
 }
@@ -97,3 +83,4 @@ extension Safe4Decorator {
         return owner
     }
 }
+

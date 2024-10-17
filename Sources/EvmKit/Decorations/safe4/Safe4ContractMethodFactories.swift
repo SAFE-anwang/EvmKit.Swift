@@ -3,6 +3,7 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
 
     override init() {
         super.init()
+        
         register(factories: [
             DepositMethodFactory(),
             Safe4WithdrawMethodFactory(),
@@ -13,7 +14,11 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
             Safe4SuperNodeVoteMethodFactory(),
             Safe4NodeStateUploadMethodFactory(),
             Safe4SuperNodeLockVoteMethodFactory(),
-            Safe4NodeDeployMethodFactory()
+            Safe4NodeDeployMethodFactory(),
+            Safe4UpdateDescMethodFactory(),
+            Safe4NodeUpdateEnodeMethodFactory(),
+            Safe4NodeUpdateNameMethodFactory(),
+            Safe4NodeUpdateAddressMethodFactory()
         ])
     }
 }
