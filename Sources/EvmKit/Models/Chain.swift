@@ -171,6 +171,16 @@ public extension Chain {
     
     static var SafeFour: Chain {
         Chain(
+            id: 6666665,
+            coinType: 60,
+            syncInterval: 15,
+            gasLimit: 300_000_000,
+            isEIP1559Supported: false
+        )
+    }
+    
+    static var SafeFourTestNet: Chain {
+        Chain(
             id: 6_666_666,
             coinType: 60,
             syncInterval: 15,
