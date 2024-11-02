@@ -195,6 +195,91 @@ class Safe4NodeUpdateAddressMethod: ContractMethod {
     override var arguments: [Any] {[]}
 }
 
+class Safe4AppendRegisterMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.AppendRegister.id.hs.hexData ?? Data()
+    
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    let addr: Address
+    let lockDay: BigUInt
+    
+    init(addr: Address, lockDay: BigUInt) {
+        self.addr = addr
+        self.lockDay = lockDay
+    }
+    
+    override var methodSignature: String { "" }
+    
+    override var arguments: [Any] {[addr, lockDay]}
+}
+
+class Safe4MasterNodeRegisterMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.MasterNodeRegister.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    let isUnion: BigUInt
+    let addr: Address
+    let lockDay: BigUInt
+
+    init(isUnion: BigUInt, addr: Address, lockDay: BigUInt) {
+        self.isUnion = isUnion
+        self.addr = addr
+        self.lockDay = lockDay
+    }
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[isUnion, addr, lockDay]}
+}
+
+class Safe4SuperNodeRegisterMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.SuperNodeRegister.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    let isUnion: BigUInt
+    let addr: Address
+    let lockDay: BigUInt
+
+    init(isUnion: BigUInt, addr: Address, lockDay: BigUInt) {
+        self.isUnion = isUnion
+        self.addr = addr
+        self.lockDay = lockDay
+    }
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[isUnion, addr, lockDay]}
+}
+
+class Safe4AddLockDayMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.AddLockDay.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    let lockId: BigUInt
+    let lockDay: BigUInt
+
+    init(lockId: BigUInt, lockDay: BigUInt) {
+        self.lockId = lockId
+        self.lockDay = lockDay
+    }
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[lockId, lockDay]}
+}
+
+
 public enum Safe4Methods: CaseIterable {
     case AppendRegister
     case Withdraw
@@ -215,6 +300,7 @@ public enum Safe4Methods: CaseIterable {
     case NodeStateUpload
     case ProposalVote
     case ContractDeployment
+    case AddLockDay
     
     public var id: String {
         switch self {
@@ -237,6 +323,7 @@ public enum Safe4Methods: CaseIterable {
         case .NodeStateUpload: "0xa6aa19d2"
         case .ProposalVote: "0xb384abef"
         case .ContractDeployment: "0x60806040"
+        case .AddLockDay: "0x38e06620"
         }
     }
 }

@@ -18,7 +18,11 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
             Safe4UpdateDescMethodFactory(),
             Safe4NodeUpdateEnodeMethodFactory(),
             Safe4NodeUpdateNameMethodFactory(),
-            Safe4NodeUpdateAddressMethodFactory()
+            Safe4NodeUpdateAddressMethodFactory(),
+            Safe4AppendRegisterMethodFactory(),
+            Safe4MasterNodeRegisterMethodFactory(),
+            Safe4SuperNodeRegisterMethodFactory(),
+            Safe4AddLockDayMethodFactory()
         ])
     }
 }

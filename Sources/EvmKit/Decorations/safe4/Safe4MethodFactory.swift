@@ -144,3 +144,62 @@ class Safe4NodeUpdateAddressMethodFactory: IContractMethodFactory {
     }
 }
 
+class Safe4AppendRegisterMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4AppendRegisterMethod.methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: inputArguments, argumentTypes: [EvmKit.Address.self, BigUInt.self])
+        guard let address = parsedArguments[0] as? EvmKit.Address,
+              let lockDay = parsedArguments[1] as? BigUInt else {
+            throw ContractMethodFactories.DecodeError.invalidABI
+        }
+        return Safe4AppendRegisterMethod(addr: address, lockDay: lockDay)
+    }
+}
+
+class Safe4MasterNodeRegisterMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4MasterNodeRegisterMethod.methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: inputArguments, argumentTypes: [BigUInt.self, EvmKit.Address.self, BigUInt.self])
+        guard let isUnion = parsedArguments[0] as? BigUInt,
+              let address = parsedArguments[1] as? EvmKit.Address,
+              let lockDay = parsedArguments[2] as? BigUInt else {
+            throw ContractMethodFactories.DecodeError.invalidABI
+        }
+        return Safe4MasterNodeRegisterMethod(isUnion: isUnion, addr: address, lockDay: lockDay)
+    }
+}
+
+class Safe4SuperNodeRegisterMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4SuperNodeRegisterMethod.methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: inputArguments, argumentTypes: [BigUInt.self, EvmKit.Address.self, BigUInt.self])
+        guard let isUnion = parsedArguments[0] as? BigUInt,
+              let address = parsedArguments[1] as? EvmKit.Address,
+              let lockDay = parsedArguments[2] as? BigUInt else {
+            throw ContractMethodFactories.DecodeError.invalidABI
+        }
+        return Safe4SuperNodeRegisterMethod(isUnion: isUnion, addr: address, lockDay: lockDay)
+    }
+
+}
+
+class Safe4AddLockDayMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4AddLockDayMethod.methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: inputArguments, argumentTypes: [BigUInt.self, BigUInt.self])
+        guard let lockId = parsedArguments[0] as? BigUInt,
+              let lockDay = parsedArguments[1] as? BigUInt else {
+            throw ContractMethodFactories.DecodeError.invalidABI
+        }
+        return Safe4AddLockDayMethod(lockId: lockId, lockDay: lockDay)
+    }
+
+}
