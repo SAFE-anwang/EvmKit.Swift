@@ -311,7 +311,7 @@ extension Kit {
         switch rpcSource {
         case let .http(urls, auth):
             let apiProvider = NodeApiProvider(networkManager: networkManager, urls: urls, auth: auth)
-            if chain == .SafeFour {
+            if chain == .SafeFour || chain == .SafeFourTestNet {
                 syncer = ApiRpcSyncerSafe4(rpcApiProvider: apiProvider, reachabilityManager: reachabilityManager, syncInterval: chain.syncInterval)
             }else {
                 syncer = ApiRpcSyncer(rpcApiProvider: apiProvider, reachabilityManager: reachabilityManager, syncInterval: chain.syncInterval)
@@ -324,7 +324,7 @@ extension Kit {
 
         let storage: IApiStorage = try ApiStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "api-\(uniqueId)")
         var blockchain: IBlockchain
-        if chain == Chain.SafeFour, case let .http(urls, _) = rpcSource {
+        if chain == Chain.SafeFour ||  chain == Chain.SafeFourTestNet, case let .http(urls, _) = rpcSource {
             let transactionBuilder = Safe4TransactionBuilder(chain: chain, address: address)
             let safe4Provider = Safe4Provider(chain: chain, urls: urls)
             blockchain = RpcBlockchainSafe4.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, safe4Provider: safe4Provider, logger: logger)
@@ -346,7 +346,7 @@ extension Kit {
 
         transactionSyncManager.add(syncer: ethereumTransactionSyncer)
         transactionSyncManager.add(syncer: internalTransactionSyncer)
-        if chain == Chain.SafeFour {
+        if chain == Chain.SafeFour || chain == .SafeFourTestNet {
             let safe4TransactionSyncer = Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage)
             transactionSyncManager.add(syncer: safe4TransactionSyncer)
         }
@@ -362,7 +362,7 @@ extension Kit {
         blockchain.delegate = kit
 
         decorationManager.add(transactionDecorator: EthereumDecorator(address: address))
-        if (chain == Chain.SafeFour) {
+        if chain == Chain.SafeFour || chain == .SafeFourTestNet {
             decorationManager.add(transactionDecorator: Safe4Decorator(address: address))
             kit.add(methodDecorator: Safe4MethodDecorator(contractMethodFactories: Safe4ContractMethodFactories()))
          }
