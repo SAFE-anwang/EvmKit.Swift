@@ -106,9 +106,13 @@ public extension RpcSource {
     
     static func safeFourRpcHttp() -> RpcSource {
          .http(urls: [URL(string: "https://safe4.anwang.com/rpc")!], auth: nil)
-     }
+    }
     
     static func safeFourTestNetRpcHttp() -> RpcSource {
          .http(urls: [URL(string: "https://safe4testnet.anwang.com/rpc")!], auth: nil)
-     }
+    }
+
+    static func baseRpcHttp() -> RpcSource {
+        .http(urls: [URL(string: "https://mainnet.base.org")!], auth: nil)
+    }
 }

@@ -216,11 +216,11 @@ public extension Kit {
         return try await blockchain.estimateGas(to: to, amount: resolvedAmount, gasLimit: chain.gasLimit, gasPrice: gasPrice, data: nil)
     }
 
-    func fetchEstimateGas(to: Address?, amount: BigUInt?, gasPrice: GasPrice, data: Data?) async throws -> Int {
+    func fetchEstimateGas(to: Address?, amount: BigUInt?, gasPrice: GasPrice?, data: Data?) async throws -> Int {
         try await blockchain.estimateGas(to: to, amount: amount, gasLimit: chain.gasLimit, gasPrice: gasPrice, data: data)
     }
 
-    func fetchEstimateGas(transactionData: TransactionData, gasPrice: GasPrice) async throws -> Int {
+    func fetchEstimateGas(transactionData: TransactionData, gasPrice: GasPrice? = nil) async throws -> Int {
         try await fetchEstimateGas(to: transactionData.to, amount: transactionData.value, gasPrice: gasPrice, data: transactionData.input)
     }
 
@@ -371,8 +371,8 @@ extension Kit {
 
     private static func transactionProvider(transactionSource: TransactionSource, address: Address, logger: Logger) -> ITransactionProvider {
         switch transactionSource.type {
-        case let .etherscan(apiBaseUrl, _, apiKey):
-            return EtherscanTransactionProvider(baseUrl: apiBaseUrl, apiKey: apiKey, address: address, logger: logger)
+        case let .etherscan(apiBaseUrl, _, apiKeys):
+            return EtherscanTransactionProvider(baseUrl: apiBaseUrl, apiKeys: apiKeys, address: address, logger: logger)
         }
     }
 
