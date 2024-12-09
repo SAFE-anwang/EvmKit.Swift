@@ -84,6 +84,7 @@ extension RpcBlockchainSafe4 {
 }
 
 extension RpcBlockchainSafe4: IBlockchain {
+
     var source: String {
         "RPC \(syncer.source)"
     }
@@ -173,7 +174,7 @@ extension RpcBlockchainSafe4: IBlockchain {
         try await syncer.fetch(rpc: Self.callRpc(contractAddress: contractAddress, data: data, defaultBlockParameter: defaultBlockParameter))
     }
 
-    func estimateGas(to: Address?, amount: BigUInt?, gasLimit: Int?, gasPrice: GasPrice, data: Data?) async throws -> Int {
+    func estimateGas(to: Address?, amount: BigUInt?, gasLimit: Int?, gasPrice: GasPrice?, data: Data?) async throws -> Int {
         try await syncer.fetch(rpc: EstimateGasJsonRpc(from: address, to: to, amount: amount, gasLimit: gasLimit, gasPrice: gasPrice, data: data))
     }
 

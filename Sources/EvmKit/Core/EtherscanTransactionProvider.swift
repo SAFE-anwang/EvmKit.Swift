@@ -6,21 +6,26 @@ import HsToolKit
 class EtherscanTransactionProvider {
     private let networkManager: NetworkManager
     private let baseUrl: String
-    private let apiKey: String
     private let address: Address
+    private let syncedState: SyncedState
 
-    init(baseUrl: String, apiKey: String, address: Address, logger: Logger) {
-        networkManager = NetworkManager(interRequestInterval: 1, logger: logger)
+    init(baseUrl: String, apiKeys: [String], address: Address, logger: Logger) {
+        networkManager = NetworkManager(logger: logger)
         self.baseUrl = baseUrl
-        self.apiKey = apiKey
         self.address = address
+
+        syncedState = .init(apiKeys: apiKeys)
     }
 
-    private func fetch(params: [String: Any]) async throws -> [[String: Any]] {
+    private func fetch(params: [String: Any], retryCount: Int = 0) async throws -> [[String: Any]] {
+        if let delay = await syncedState.getDelay() {
+            try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+        }
+
         let urlString = "\(baseUrl)/api"
 
         var parameters = params
-        parameters["apikey"] = apiKey
+        parameters["apikey"] = await syncedState.getApiKey()
 
         let json = try await networkManager.fetchJson(url: urlString, method: .get, parameters: parameters, responseCacherBehavior: .doNotCache)
 
@@ -42,7 +47,11 @@ class EtherscanTransactionProvider {
                 return []
             }
 
-            if message == "NOTOK", let result, result.contains("Max rate limit reached") {
+            if message == "NOTOK", let result, result.contains("limit reached") {
+                if retryCount < 2 {
+                    return try await fetch(params: params, retryCount: retryCount + 1)
+                }
+
                 throw RequestError.rateLimitExceeded
             }
 
@@ -157,5 +166,34 @@ extension EtherscanTransactionProvider {
         case responseError(message: String?, result: String?)
         case invalidResult
         case rateLimitExceeded
+    }
+
+    actor SyncedState {
+        private let apiKeys: [String]
+        private var index = 0
+        private var nextRequestTime: TimeInterval = 0
+
+        init(apiKeys: [String]) {
+            self.apiKeys = apiKeys
+        }
+
+        func getApiKey() -> String {
+            index = (index + 1) % apiKeys.count
+            return apiKeys[index]
+        }
+
+        func getDelay() -> TimeInterval? {
+            let interval: TimeInterval = 1
+            let now = Date().timeIntervalSince1970
+
+            if now > nextRequestTime {
+                nextRequestTime = now + interval
+                return nil
+            } else {
+                let delay = nextRequestTime - now
+                nextRequestTime += interval
+                return delay
+            }
+        }
     }
 }
