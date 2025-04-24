@@ -21,8 +21,8 @@ public struct ProviderTransaction: ImmutableMappable {
     let gasUsed: Int?
 
     public init(map: Map) throws {
-        blockNumber = try map.value("blockNumber", using: StringIntTransform())
-        timestamp = try map.value("timeStamp", using: StringIntTransform())
+        blockNumber = try (try? map.value("blockNumber", using: StringIntTransform())) ?? map.value("blockNumber")
+        timestamp = try (try? map.value("timeStamp", using: StringIntTransform())) ?? map.value("timeStamp")
         hash = try map.value("hash", using: HexDataTransform())
         nonce = try map.value("nonce", using: StringIntTransform())
         blockHash = try? map.value("blockHash", using: HexDataTransform())
@@ -41,26 +41,27 @@ public struct ProviderTransaction: ImmutableMappable {
 }
 
 public struct Safe4AccountManagerTransaction: ImmutableMappable {
+    let eventLogIndex: Int
     let hash: Data
-    let blockNumber: Int
-    let timestamp: Int
-    let from: Address
-    let to: Address
-    let amount: BigUInt
-    let action: String
-    let lockId: String
     let lockDay: Int?
-    
-    public init(map: Map) throws {
+    let lockId: String
+    let from: Address?
+    let timestamp: Int
+    let action: String
+    let blockNumber: Int
+    let to: Address?
+    let amount: BigUInt
 
-        action = try map.value("action")
-        lockId = try map.value("lockId")
-        lockDay = try? map.value("lockDay", using: StringIntTransform())
-        blockNumber = try map.value("blockNumber")
-        timestamp = try map.value("timeStamp", using: StringIntTransform())
+    public init(map: Map) throws {
         hash = try map.value("hash", using: HexDataTransform())
-        from = try map.value("from", using: HexAddressTransform())
-        to = try map.value("to", using: HexAddressTransform())
+        lockDay = try (try? map.value("lockDay", using: StringIntTransform())) ?? map.value("lockDay")
+        lockId = try map.value("lockId")
+        from = try? map.value("from", using: HexAddressTransform())
+        timestamp = try (try? map.value("timeStamp", using: StringIntTransform())) ?? map.value("timeStamp")
+        action = try map.value("action")
+        blockNumber = try (try? map.value("blockNumber", using: StringIntTransform())) ?? map.value("blockNumber")
+        to = try? map.value("to", using: HexAddressTransform())
         amount = try map.value("amount", using: StringBigUIntTransform())
+        eventLogIndex = try map.value("eventLogIndex")
     }
 }

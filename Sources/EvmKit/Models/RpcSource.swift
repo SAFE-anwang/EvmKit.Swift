@@ -81,7 +81,7 @@ public extension RpcSource {
     }
 
     static func polygonRpcHttp() -> RpcSource {
-        .http(urls: [URL(string: "https://polygon-rpc.com")!], auth: nil)
+        .http(urls: [URL(string: "https://polygon-rpc.com")!, URL(string: "https://polygon.drpc.org")!], auth: nil)
     }
 
     static func avaxNetworkHttp() -> RpcSource {
@@ -103,6 +103,14 @@ public extension RpcSource {
     static func fantomRpcHttp() -> RpcSource {
         .http(urls: [URL(string: "https://rpc.fantom.network")!], auth: nil)
     }
+
+    static func baseRpcHttp() -> RpcSource {
+        .http(urls: [URL(string: "https://mainnet.base.org")!], auth: nil)
+    }
+
+    static func zkSyncRpcHttp() -> RpcSource {
+        .http(urls: [URL(string: "https://mainnet.era.zksync.io")!], auth: nil)
+    }
     
     static func safeFourRpcHttp() -> RpcSource {
          .http(urls: [URL(string: "https://safe4.anwang.com/rpc")!], auth: nil)
@@ -110,9 +118,5 @@ public extension RpcSource {
     
     static func safeFourTestNetRpcHttp() -> RpcSource {
          .http(urls: [URL(string: "https://safe4testnet.anwang.com/rpc")!], auth: nil)
-    }
-
-    static func baseRpcHttp() -> RpcSource {
-        .http(urls: [URL(string: "https://mainnet.base.org")!], auth: nil)
     }
 }

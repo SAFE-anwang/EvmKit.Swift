@@ -18,10 +18,6 @@ public struct Chain {
     public var isMainNet: Bool {
         coinType != 1
     }
-    
-    public var isSafeFourTestNet: Bool {
-        id == 6666666
-    }
 }
 
 extension Chain: Equatable {
@@ -114,6 +110,16 @@ public extension Chain {
         Chain(
             id: 8453,
             coinType: 60, // actually Optimism has coin type 614
+            syncInterval: 15,
+            gasLimit: 10_000_000,
+            isEIP1559Supported: true
+        )
+    }
+
+    static var zkSync: Chain {
+        Chain(
+            id: 324,
+            coinType: 60,
             syncInterval: 15,
             gasLimit: 10_000_000,
             isEIP1559Supported: true

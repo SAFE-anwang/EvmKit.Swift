@@ -40,6 +40,7 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
                 if let num = duplicates[tx.hash] {
                     total = total * BigUInt(num)
                 }
+
                 return Transaction(
                     hash: tx.hash,
                     timestamp: tx.timestamp,

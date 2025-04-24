@@ -13,10 +13,10 @@ public struct ProviderInternalTransaction: ImmutableMappable {
 
     public init(map: Map) throws {
         hash = try map.value("hash", using: HexDataTransform())
-        blockNumber = try map.value("blockNumber", using: StringIntTransform())
-        timestamp = try map.value("timeStamp", using: StringIntTransform())
-        from = try map.value("from", using: HexAddressTransform())
-        to = try map.value("to", using: HexAddressTransform())
+        blockNumber = try (try? map.value("blockNumber", using: StringIntTransform())) ?? map.value("blockNumber")
+        timestamp = try (try? map.value("timeStamp", using: StringIntTransform())) ?? map.value("timeStamp")
+        from = try (try? map.value("from", using: HexAddressTransform())) ?? Address(hex: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        to = try (try? map.value("to", using: HexAddressTransform())) ?? Address(hex: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         value = try map.value("value", using: StringBigUIntTransform())
         traceId = try map.value("traceId")
     }
@@ -25,7 +25,7 @@ public struct ProviderInternalTransaction: ImmutableMappable {
         InternalTransaction(
             hash: hash,
             blockNumber: blockNumber,
-            from: from,
+            from: from ,
             to: to,
             value: value,
             traceId: traceId
