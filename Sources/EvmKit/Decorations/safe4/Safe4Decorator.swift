@@ -12,7 +12,7 @@ class Safe4Decorator {
 }
 
 extension Safe4Decorator: ITransactionDecorator {
-    public func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions _: [InternalTransaction], eventInstances _: [ContractEventInstance], isLock: Bool) -> TransactionDecoration? {
+    public func decoration(from: Address?, to: Address?, value: BigUInt?, contractMethod: ContractMethod?, internalTransactions: [InternalTransaction], eventInstances: [ContractEventInstance], isLock: Bool) -> TransactionDecoration? {
         
         switch contractMethod {
 
@@ -55,10 +55,44 @@ extension Safe4Decorator: ITransactionDecorator {
             
         case is Safe4AddLockDayMethod:
             return Safe4AddLockDayDecoration(to: to, value: value ?? 0, sentToSelf: false)
-                
+            
+        case is Safe4WithdrawMethod:
+            guard let from else { return nil}
+            let value = internalTransactions.map{$0.value}.reduce(0, +)
+            return Safe4WithdrawDecoration(from: from, value: value)
+            
+        case is Safe4BatchRedeemLockedMethod,
+            is Safe4BatchRedeemAvailableMethod:
+            return Safe4BatchRedeemDecoration(from: from, to: to, value: value ?? 0)
+            
+        case is WsafeToSafe4Method, is Safe4Eth2safeMethod:
+            guard let from, let value else { return nil}
+            return Safe4CrossChainIncomingDecoration(from: from, value: value)
+            
+        case is Safe4ToWsafeMethod:
+            guard let to, let value else { return nil}
+            return Safe4CrossChainOutgoingDecoration(to: to, value: value, sentToSelf: to == address)
+            
+        case let _contractMethod as Safe4DepositMethod:
+            if let from, let value, let to {
+                if from == address {
+                    
+                    let sentToSelf : Bool
+                    if let address = address(input: _contractMethod.encodedABI()) {
+                        sentToSelf = address == from
+                    }else {
+                        sentToSelf = to == address
+                    }
+                    return  Safe4DepositOutgoingDecoration(to: to, value: value, sentToSelf: sentToSelf)
+                }
+
+                if to == address || isLock == true && to == address {
+                    return Safe4DepositIncomingDecoration(from: from, value: value)
+                }
+            }
         default: ()
         }
-            
+        
         guard let from, let value else {
             return nil
         }
@@ -67,33 +101,15 @@ extension Safe4Decorator: ITransactionDecorator {
             return ContractCreationDecoration()
         }
 
-        if let contractMethod, contractMethod is Safe4DepositMethod {
+        if let contractMethod, contractMethod is EmptyMethod {
             if from == address {
-                
-                let sentToSelf : Bool
-                if let address = address(input: contractMethod.encodedABI()) {
-                    sentToSelf = address == from
-                }else {
-                    sentToSelf = to == address
-                }
-                return  Safe4DepositOutgoingDecoration(to: to, value: value, sentToSelf: sentToSelf)
+                return OutgoingDecoration(to: to, value: value, sentToSelf: to == address)
             }
 
             if to == address {
-                return Safe4DepositIncomingDecoration(from: from, value: value)
+                return IncomingDecoration(from: from, value: value)
             }
         }
-        
-        if let contractMethod, contractMethod is Safe4WithdrawMethod {
-            let from = try! Address(hex: Safe4ContractAddress.AccountManagerContractAddr)
-            return  Safe4WithdrawDecoration(from: from, value: value)
-        }
-        
-        if (isLock == true && to == address) {
-            return Safe4DepositIncomingDecoration(from: from, value: value)
-        }
-        
-
         return nil
     }
 }

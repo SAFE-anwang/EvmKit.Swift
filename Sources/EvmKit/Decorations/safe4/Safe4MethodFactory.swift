@@ -10,15 +10,6 @@ class Safe4WithdrawMethodFactory: IContractMethodFactory {
     }
 }
 
-class Safe4WithdrawMethodMethodFactory: IContractMethodFactory {
-    
-    let methodId: Data = Safe4WithdrawMethod().methodId
-
-    func createMethod(inputArguments: Data) throws -> ContractMethod {
-        return Safe4WithdrawMethod()
-    }
-}
-
 class Safe4RedeemAvailableMethodFactory: IContractMethodFactory {
     
     let methodId: Data = Safe4RedeemAvailableMethod().methodId
@@ -201,5 +192,48 @@ class Safe4AddLockDayMethodFactory: IContractMethodFactory {
         }
         return Safe4AddLockDayMethod(lockId: lockId, lockDay: lockDay)
     }
+}
 
+class Safe4BatchRedeemLockedMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4BatchRedeemLockedMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4BatchRedeemLockedMethod()
+    }
+}
+
+class Safe4BatchRedeemAvailableMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4BatchRedeemAvailableMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4BatchRedeemAvailableMethod()
+    }
+}
+
+class Safe4Eth2safeMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4Eth2safeMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4Eth2safeMethod()
+    }
+}
+class Safe4ToWsafeMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4ToWsafeMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4ToWsafeMethod()
+    }
+}
+
+class WsafeToSafe4MethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = WsafeToSafe4Method().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return WsafeToSafe4Method()
+    }
 }

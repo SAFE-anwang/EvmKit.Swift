@@ -279,6 +279,75 @@ class Safe4AddLockDayMethod: ContractMethod {
     override var arguments: [Any] {[lockId, lockDay]}
 }
 
+class Safe4BatchRedeemLockedMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.BatchRedeemLocked.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class Safe4BatchRedeemAvailableMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.BatchRedeemAvailable.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class Safe4Eth2safeMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.Eth2safe.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class Safe4ToWsafeMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.safe4ToWsafe.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
+
+class WsafeToSafe4Method: ContractMethod {
+    static let methodId: Data = Safe4Methods.wsafeToSafe4.id.hs.hexData ?? Data()
+
+    override var methodId: Data {
+        Self.methodId
+    }
+    
+    override init() {}
+
+    override var methodSignature: String { "" }
+
+    override var arguments: [Any] {[]}
+}
 
 public enum Safe4Methods: CaseIterable {
     case AppendRegister
@@ -301,6 +370,11 @@ public enum Safe4Methods: CaseIterable {
     case ProposalVote
     case ContractDeployment
     case AddLockDay
+    case BatchRedeemLocked // 锁仓余额迁移
+    case BatchRedeemAvailable // 余额迁移
+    case Eth2safe
+    case safe4ToWsafe
+    case wsafeToSafe4
     
     public var id: String {
         switch self {
@@ -324,6 +398,11 @@ public enum Safe4Methods: CaseIterable {
         case .ProposalVote: "0xb384abef"
         case .ContractDeployment: "0x60806040"
         case .AddLockDay: "0x38e06620"
+        case .BatchRedeemLocked: "0x4c9e906a"
+        case .BatchRedeemAvailable: "0xdb5b287d"
+        case .Eth2safe: "0xbc157d0c"
+        case .safe4ToWsafe: "0x6273633a"
+        case .wsafeToSafe4: "0x6269643a" //in
         }
     }
 }

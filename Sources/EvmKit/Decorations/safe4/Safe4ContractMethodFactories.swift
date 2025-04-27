@@ -22,7 +22,12 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
             Safe4AppendRegisterMethodFactory(),
             Safe4MasterNodeRegisterMethodFactory(),
             Safe4SuperNodeRegisterMethodFactory(),
-            Safe4AddLockDayMethodFactory()
+            Safe4AddLockDayMethodFactory(),
+            Safe4BatchRedeemLockedMethodFactory(),
+            Safe4BatchRedeemAvailableMethodFactory(),
+            Safe4Eth2safeMethodFactory(),
+            Safe4ToWsafeMethodFactory(),
+            WsafeToSafe4MethodFactory()
         ])
     }
 }
