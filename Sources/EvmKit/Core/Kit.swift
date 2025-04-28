@@ -364,12 +364,9 @@ extension Kit {
         )
 
         blockchain.delegate = kit
-
         decorationManager.add(transactionDecorator: EthereumDecorator(address: address))
-        if chain == Chain.SafeFour || chain == .SafeFourTestNet {
-            decorationManager.add(transactionDecorator: Safe4Decorator(address: address))
-            kit.add(methodDecorator: Safe4MethodDecorator(contractMethodFactories: Safe4ContractMethodFactories()))
-         }
+        decorationManager.add(transactionDecorator: Safe4Decorator(address: address))
+        decorationManager.add(methodDecorator: Safe4MethodDecorator(contractMethodFactories: Safe4ContractMethodFactories()))
         return kit
     }
 

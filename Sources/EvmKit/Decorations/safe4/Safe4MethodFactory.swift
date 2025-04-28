@@ -3,7 +3,7 @@ import BigInt
 
 class Safe4WithdrawMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4WithdrawMethod().methodId
+    let methodId: Data = Safe4WithdrawMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4WithdrawMethod()
@@ -12,7 +12,7 @@ class Safe4WithdrawMethodFactory: IContractMethodFactory {
 
 class Safe4RedeemAvailableMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4RedeemAvailableMethod().methodId
+    let methodId: Data = Safe4RedeemAvailableMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4RedeemAvailableMethod()
@@ -21,7 +21,7 @@ class Safe4RedeemAvailableMethodFactory: IContractMethodFactory {
 
 class Safe4RedeemLockedMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4RedeemLockedMethod().methodId
+    let methodId: Data = Safe4RedeemLockedMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4RedeemLockedMethod()
@@ -30,7 +30,7 @@ class Safe4RedeemLockedMethodFactory: IContractMethodFactory {
 
 class Safe4RedeemMasterNodeMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4RedeemMasterNodeMethod().methodId
+    let methodId: Data = Safe4RedeemMasterNodeMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4RedeemMasterNodeMethod()
@@ -82,7 +82,7 @@ class Safe4SuperNodeLockVoteMethodFactory: IContractMethodFactory {
 
 class Safe4NodeStateUploadMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4NodeStateUploadMethod().methodId
+    let methodId: Data = Safe4NodeStateUploadMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4NodeStateUploadMethod()
@@ -91,7 +91,7 @@ class Safe4NodeStateUploadMethodFactory: IContractMethodFactory {
 
 class Safe4NodeDeployMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4NodeDeployMethod().methodId
+    let methodId: Data = Safe4NodeDeployMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4NodeDeployMethod()
@@ -101,7 +101,7 @@ class Safe4NodeDeployMethodFactory: IContractMethodFactory {
 
 class Safe4UpdateDescMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4UpdateDescMethod().methodId
+    let methodId: Data = Safe4UpdateDescMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4UpdateDescMethod()
@@ -110,7 +110,7 @@ class Safe4UpdateDescMethodFactory: IContractMethodFactory {
 
 class Safe4NodeUpdateEnodeMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4NodeUpdateEnodeMethod().methodId
+    let methodId: Data = Safe4NodeUpdateEnodeMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4NodeUpdateEnodeMethod()
@@ -119,7 +119,7 @@ class Safe4NodeUpdateEnodeMethodFactory: IContractMethodFactory {
 
 class Safe4NodeUpdateNameMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4NodeUpdateNameMethod().methodId
+    let methodId: Data = Safe4NodeUpdateNameMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4NodeUpdateNameMethod()
@@ -128,7 +128,7 @@ class Safe4NodeUpdateNameMethodFactory: IContractMethodFactory {
 
 class Safe4NodeUpdateAddressMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4NodeUpdateAddressMethod().methodId
+    let methodId: Data = Safe4NodeUpdateAddressMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4NodeUpdateAddressMethod()
@@ -196,7 +196,7 @@ class Safe4AddLockDayMethodFactory: IContractMethodFactory {
 
 class Safe4BatchRedeemLockedMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4BatchRedeemLockedMethod().methodId
+    let methodId: Data = Safe4BatchRedeemLockedMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4BatchRedeemLockedMethod()
@@ -205,7 +205,7 @@ class Safe4BatchRedeemLockedMethodFactory: IContractMethodFactory {
 
 class Safe4BatchRedeemAvailableMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4BatchRedeemAvailableMethod().methodId
+    let methodId: Data = Safe4BatchRedeemAvailableMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4BatchRedeemAvailableMethod()
@@ -214,16 +214,21 @@ class Safe4BatchRedeemAvailableMethodFactory: IContractMethodFactory {
 
 class Safe4Eth2safeMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4Eth2safeMethod().methodId
+    let methodId: Data = Safe4Eth2safeMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
-        return Safe4Eth2safeMethod()
+        let parsedArguments = ContractMethodHelper.decodeABI(inputArguments: inputArguments, argumentTypes: [BigUInt.self, EvmKit.Address.self])
+        guard let value = parsedArguments[0] as? BigUInt,
+              let address = parsedArguments[1] as? EvmKit.Address else {
+            throw ContractMethodFactories.DecodeError.invalidABI
+        }
+        return Safe4Eth2safeMethod(value: value, address: address)
     }
 }
 
 class BscToSafe4MethodFactory: IContractMethodFactory {
     
-    let methodId: Data = BscToSafe4Method().methodId
+    let methodId: Data = BscToSafe4Method.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return BscToSafe4Method()
@@ -232,7 +237,7 @@ class BscToSafe4MethodFactory: IContractMethodFactory {
 
 class EthToSafe4MethodFactory: IContractMethodFactory {
     
-    let methodId: Data = EthToSafe4Method().methodId
+    let methodId: Data = EthToSafe4Method.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return EthToSafe4Method()
@@ -241,7 +246,7 @@ class EthToSafe4MethodFactory: IContractMethodFactory {
 
 class PolToSafe4MethodFactory: IContractMethodFactory {
     
-    let methodId: Data = PolToSafe4Method().methodId
+    let methodId: Data = PolToSafe4Method.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return PolToSafe4Method()
@@ -250,7 +255,7 @@ class PolToSafe4MethodFactory: IContractMethodFactory {
 
 class Safe4ToBscMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4ToBscMethod().methodId
+    let methodId: Data = Safe4ToBscMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4ToBscMethod()
@@ -259,7 +264,7 @@ class Safe4ToBscMethodFactory: IContractMethodFactory {
 
 class Safe4ToEthMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4ToEthMethod().methodId
+    let methodId: Data = Safe4ToEthMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4ToEthMethod()
@@ -268,7 +273,7 @@ class Safe4ToEthMethodFactory: IContractMethodFactory {
 
 class Safe4ToPolMethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4ToPolMethod().methodId
+    let methodId: Data = Safe4ToPolMethod.methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
         return Safe4ToPolMethod()

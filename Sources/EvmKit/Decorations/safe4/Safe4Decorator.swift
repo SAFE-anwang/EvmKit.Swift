@@ -65,8 +65,17 @@ extension Safe4Decorator: ITransactionDecorator {
             is Safe4BatchRedeemAvailableMethod:
             return Safe4BatchRedeemDecoration(from: from, to: to, value: value ?? 0)
             
-        case is Safe4Eth2safeMethod,
-            is BscToSafe4Method,
+        case let _contractMethod as Safe4Eth2safeMethod:
+            guard let from, let to else { return nil }
+            let value = _contractMethod.value
+            if from == address {
+                return Safe4CrossChainOutgoingDecoration(from: from, to: to, value: value)
+            }
+            if to == address {
+                return Safe4CrossChainIncomingDecoration(from: from, to: to, value: value)
+            }
+            
+        case is BscToSafe4Method,
             is EthToSafe4Method,
             is PolToSafe4Method,
             is Safe4ToBscMethod,

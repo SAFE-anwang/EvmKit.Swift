@@ -312,11 +312,17 @@ class Safe4Eth2safeMethod: ContractMethod {
 
     override var methodId: Data { Self.methodId }
     
-    override init() {}
+    let value: BigUInt
+    let address: Address
+    
+    init(value: BigUInt, address: Address) {
+        self.value = value
+        self.address = address
+    }
 
     override var methodSignature: String { "" }
 
-    override var arguments: [Any] {[]}
+    override var arguments: [Any] {[value, address]}
 }
 
 class BscToSafe4Method: ContractMethod {
