@@ -26,8 +26,12 @@ class Safe4ContractMethodFactories: ContractMethodFactories {
             Safe4BatchRedeemLockedMethodFactory(),
             Safe4BatchRedeemAvailableMethodFactory(),
             Safe4Eth2safeMethodFactory(),
-            Safe4ToWsafeMethodFactory(),
-            WsafeToSafe4MethodFactory()
+            BscToSafe4MethodFactory(),
+            EthToSafe4MethodFactory(),
+            PolToSafe4MethodFactory(),
+            Safe4ToBscMethodFactory(),
+            Safe4ToEthMethodFactory(),
+            Safe4ToPolMethodFactory()
         ])
     }
 }

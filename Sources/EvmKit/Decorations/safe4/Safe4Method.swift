@@ -310,9 +310,7 @@ class Safe4BatchRedeemAvailableMethod: ContractMethod {
 class Safe4Eth2safeMethod: ContractMethod {
     static let methodId: Data = Safe4Methods.Eth2safe.id.hs.hexData ?? Data()
 
-    override var methodId: Data {
-        Self.methodId
-    }
+    override var methodId: Data { Self.methodId }
     
     override init() {}
 
@@ -321,31 +319,51 @@ class Safe4Eth2safeMethod: ContractMethod {
     override var arguments: [Any] {[]}
 }
 
-class Safe4ToWsafeMethod: ContractMethod {
-    static let methodId: Data = Safe4Methods.safe4ToWsafe.id.hs.hexData ?? Data()
-
-    override var methodId: Data {
-        Self.methodId
-    }
-    
+class BscToSafe4Method: ContractMethod {
+    static let methodId: Data = Safe4Methods.bscToSafe4.id.hs.hexData ?? Data()
+    override var methodId: Data { Self.methodId }
     override init() {}
-
     override var methodSignature: String { "" }
-
     override var arguments: [Any] {[]}
 }
 
-class WsafeToSafe4Method: ContractMethod {
-    static let methodId: Data = Safe4Methods.wsafeToSafe4.id.hs.hexData ?? Data()
-
-    override var methodId: Data {
-        Self.methodId
-    }
-    
+class EthToSafe4Method: ContractMethod {
+    static let methodId: Data = Safe4Methods.ethToSafe4.id.hs.hexData ?? Data()
+    override var methodId: Data { Self.methodId }
     override init() {}
-
     override var methodSignature: String { "" }
+    override var arguments: [Any] {[]}
+}
 
+class PolToSafe4Method: ContractMethod {
+    static let methodId: Data = Safe4Methods.polToSafe4.id.hs.hexData ?? Data()
+    override var methodId: Data { Self.methodId }
+    override init() {}
+    override var methodSignature: String { "" }
+    override var arguments: [Any] {[]}
+}
+
+class Safe4ToBscMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.safe4ToBsc.id.hs.hexData ?? Data()
+    override var methodId: Data { Self.methodId }
+    override init() {}
+    override var methodSignature: String { "" }
+    override var arguments: [Any] {[]}
+}
+
+class Safe4ToEthMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.safe4ToEth.id.hs.hexData ?? Data()
+    override var methodId: Data { Self.methodId }
+    override init() {}
+    override var methodSignature: String { "" }
+    override var arguments: [Any] {[]}
+}
+
+class Safe4ToPolMethod: ContractMethod {
+    static let methodId: Data = Safe4Methods.safe4ToPol.id.hs.hexData ?? Data()
+    override var methodId: Data { Self.methodId }
+    override init() {}
+    override var methodSignature: String { "" }
     override var arguments: [Any] {[]}
 }
 
@@ -373,8 +391,12 @@ public enum Safe4Methods: CaseIterable {
     case BatchRedeemLocked // 锁仓余额迁移
     case BatchRedeemAvailable // 余额迁移
     case Eth2safe
-    case safe4ToWsafe
-    case wsafeToSafe4
+    case bscToSafe4
+    case ethToSafe4
+    case polToSafe4
+    case safe4ToBsc
+    case safe4ToEth
+    case safe4ToPol
     
     public var id: String {
         switch self {
@@ -401,8 +423,12 @@ public enum Safe4Methods: CaseIterable {
         case .BatchRedeemLocked: "0x4c9e906a"
         case .BatchRedeemAvailable: "0xdb5b287d"
         case .Eth2safe: "0xbc157d0c"
-        case .safe4ToWsafe: "0x6273633a"
-        case .wsafeToSafe4: "0x6269643a" //in
+        case .bscToSafe4: "0x6269643a"
+        case .ethToSafe4: "0x6569643a"
+        case .polToSafe4: "0x6d69643a"
+        case .safe4ToBsc: "0x6273633a"
+        case .safe4ToEth: "0x6574683a"
+        case .safe4ToPol: "0x6d617469"
         }
     }
 }

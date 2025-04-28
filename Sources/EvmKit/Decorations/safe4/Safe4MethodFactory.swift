@@ -220,20 +220,57 @@ class Safe4Eth2safeMethodFactory: IContractMethodFactory {
         return Safe4Eth2safeMethod()
     }
 }
-class Safe4ToWsafeMethodFactory: IContractMethodFactory {
+
+class BscToSafe4MethodFactory: IContractMethodFactory {
     
-    let methodId: Data = Safe4ToWsafeMethod().methodId
+    let methodId: Data = BscToSafe4Method().methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
-        return Safe4ToWsafeMethod()
+        return BscToSafe4Method()
     }
 }
 
-class WsafeToSafe4MethodFactory: IContractMethodFactory {
+class EthToSafe4MethodFactory: IContractMethodFactory {
     
-    let methodId: Data = WsafeToSafe4Method().methodId
+    let methodId: Data = EthToSafe4Method().methodId
 
     func createMethod(inputArguments: Data) throws -> ContractMethod {
-        return WsafeToSafe4Method()
+        return EthToSafe4Method()
+    }
+}
+
+class PolToSafe4MethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = PolToSafe4Method().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return PolToSafe4Method()
+    }
+}
+
+class Safe4ToBscMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4ToBscMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4ToBscMethod()
+    }
+}
+
+class Safe4ToEthMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4ToEthMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4ToEthMethod()
+    }
+}
+
+class Safe4ToPolMethodFactory: IContractMethodFactory {
+    
+    let methodId: Data = Safe4ToPolMethod().methodId
+
+    func createMethod(inputArguments: Data) throws -> ContractMethod {
+        return Safe4ToPolMethod()
     }
 }
