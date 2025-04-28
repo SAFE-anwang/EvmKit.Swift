@@ -65,13 +65,14 @@ extension Safe4Decorator: ITransactionDecorator {
             is Safe4BatchRedeemAvailableMethod:
             return Safe4BatchRedeemDecoration(from: from, to: to, value: value ?? 0)
             
-        case is WsafeToSafe4Method, is Safe4Eth2safeMethod:
-            guard let from, let value else { return nil}
-            return Safe4CrossChainIncomingDecoration(from: from, value: value)
-            
-        case is Safe4ToWsafeMethod:
-            guard let to, let value else { return nil}
-            return Safe4CrossChainOutgoingDecoration(to: to, value: value, sentToSelf: to == address)
+        case is WsafeToSafe4Method, is Safe4Eth2safeMethod, is Safe4ToWsafeMethod:
+            guard let from, let to, let value else { return nil }
+            if from == address {
+                return Safe4CrossChainOutgoingDecoration(from: from, to: to, value: value)
+            }
+            if to == address {
+                return Safe4CrossChainIncomingDecoration(from: from, to: to, value: value)
+            }
             
         case let _contractMethod as Safe4DepositMethod:
             if let from, let value, let to {
