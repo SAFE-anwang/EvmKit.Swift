@@ -2,9 +2,9 @@ import Foundation
 import BigInt
 
 class Safe4WithdrawMethod: ContractMethod {
-        
+    static let methodId: Data = Safe4Methods.Withdraw.id.hs.hexData ?? Data()
     override var methodId: Data {
-        Safe4Methods.Withdraw.id.hs.hexData ?? Data()
+        Self.methodId
     }
     override init() {}
 
@@ -14,9 +14,9 @@ class Safe4WithdrawMethod: ContractMethod {
 }
 
 class Safe4RedeemAvailableMethod: ContractMethod {
-    
+    static let methodId: Data = Safe4Methods.RedeemAvailable.id.hs.hexData ?? Data()
     override var methodId: Data {
-        Safe4Methods.RedeemAvailable.id.hs.hexData ?? Data()
+        Self.methodId
     }
     override init() {}
 
@@ -26,9 +26,9 @@ class Safe4RedeemAvailableMethod: ContractMethod {
 }
 
 class Safe4RedeemLockedMethod: ContractMethod {
-    
+    static let methodId: Data = Safe4Methods.RedeemLocked.id.hs.hexData ?? Data()
     override var methodId: Data {
-        Safe4Methods.RedeemLocked.id.hs.hexData ?? Data()
+        Self.methodId
     }
     override init() {}
 
@@ -38,9 +38,9 @@ class Safe4RedeemLockedMethod: ContractMethod {
 }
 
 class Safe4RedeemMasterNodeMethod: ContractMethod {
-        
+    static let methodId: Data = Safe4Methods.RedeemMsaternode.id.hs.hexData ?? Data()
     override var methodId: Data {
-        Safe4Methods.RedeemMsaternode.id.hs.hexData ?? Data()
+        Self.methodId
     }
     
     override init() {}

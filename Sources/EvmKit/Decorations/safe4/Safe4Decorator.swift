@@ -55,12 +55,7 @@ extension Safe4Decorator: ITransactionDecorator {
             
         case is Safe4AddLockDayMethod:
             return Safe4AddLockDayDecoration(to: to, value: value ?? 0, sentToSelf: false)
-            
-        case is Safe4WithdrawMethod:
-            guard let from else { return nil}
-            let value = internalTransactions.map{$0.value}.reduce(0, +)
-            return Safe4WithdrawDecoration(from: from, value: value)
-            
+                        
         case is Safe4BatchRedeemLockedMethod,
             is Safe4BatchRedeemAvailableMethod:
             return Safe4BatchRedeemDecoration(from: from, to: to, value: value ?? 0)
