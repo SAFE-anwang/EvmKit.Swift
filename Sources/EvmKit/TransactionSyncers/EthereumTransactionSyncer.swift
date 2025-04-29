@@ -52,7 +52,7 @@ extension EthereumTransactionSyncer: ITransactionSyncer {
                     transactionIndex: tx.transactionIndex,
                     from: tx.from,
                     to: tx.to,
-                    value: tx.value > 0 ? tx.value : nil,
+                    value: tx.value,
                     input: tx.input,
                     nonce: tx.nonce,
                     gasPrice: tx.gasPrice,
