@@ -403,6 +403,8 @@ public enum Safe4Methods: CaseIterable {
     case safe4ToBsc
     case safe4ToEth
     case safe4ToPol
+    case Safe4SwapSrc
+    case SrcSwapSafe4
     
     public var id: String {
         switch self {
@@ -435,6 +437,8 @@ public enum Safe4Methods: CaseIterable {
         case .safe4ToBsc: "0x6273633a"
         case .safe4ToEth: "0x6574683a"
         case .safe4ToPol: "0x6d617469"
+        case .SrcSwapSafe4: "0x2e1a7d4d"
+        case .Safe4SwapSrc: "0xd0e30db0"
         }
     }
 }
