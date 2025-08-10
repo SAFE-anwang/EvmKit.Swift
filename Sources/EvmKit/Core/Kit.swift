@@ -180,6 +180,11 @@ public extension Kit {
         return RawTransaction(gasPrice: gasPrice, gasLimit: gasLimit, to: transactionData.to, value: transactionData.value, data: transactionInput, nonce: resolvedNonce)
      }
     
+    func sendSafe4LineLock(privateKey: Data, transactionData: TransactionData) async throws -> String? {
+        guard let rpc = blockchain as? RpcBlockchainSafe4 else { return nil }
+        return try await rpc.sendSafe4LineLock(privateKey: privateKey, transactionData: transactionData)
+     }
+    
     func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int? = nil) async throws -> FullTransaction {
         let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey, lockDay: lockDay)
         let fullTransactions = transactionManager.handle(transactions: [transaction])

@@ -157,6 +157,10 @@ extension RpcBlockchainSafe4: IBlockchain {
             return transactionBuilder.transaction(rawTransaction: rawTransaction, signature: signature)
         }
     }
+    
+    func sendSafe4LineLock(privateKey: Data, transactionData: TransactionData) async throws -> String {
+        try await safe4Provider.sendSafe4LineLock(privateKey: privateKey, value: transactionData.value, to: transactionData.to, times: BigUInt(transactionData.times), spaceDay: BigUInt(transactionData.spaceDay), startDay: BigUInt(transactionData.startDay))
+    }
 
     func transactionReceipt(transactionHash: Data) async throws -> RpcTransactionReceipt {
         try await syncer.fetch(rpc: GetTransactionReceiptJsonRpc(transactionHash: transactionHash))
