@@ -8,14 +8,20 @@ public struct TransactionData {
     public var lockTime: Int?
     public var isBothErc: Bool = false
     public var safe4Swap: Int = 0
+    public var times: Int = -1
+    public var spaceDay: Int = 0
+    public var startDay: Int = 0
     
-    public init(to: Address, value: BigUInt, input: Data, lockTime: Int? = nil, isBothErc: Bool = false, safe4Swap: Int = 0) {
+    public init(to: Address, value: BigUInt, input: Data, lockTime: Int? = nil, isBothErc: Bool = false, safe4Swap: Int = 0, times: Int = -1, spaceDay: Int = 0, startDay: Int = 0) {
         self.to = to
         self.value = value
         self.input = input
         self.lockTime = lockTime
         self.isBothErc = isBothErc
         self.safe4Swap = safe4Swap
+        self.times = times
+        self.spaceDay = spaceDay
+        self.startDay = startDay
     }
     
     mutating public func update(lockTime: Int?) {
