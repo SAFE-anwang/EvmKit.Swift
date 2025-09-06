@@ -1,4 +1,5 @@
 import BigInt
+import UIKit
 
 open class UnknownTransactionDecoration: TransactionDecoration {
     private let userAddress: Address
@@ -37,13 +38,20 @@ open class UnknownTransactionDecoration: TransactionDecoration {
         for incomingInternalTransaction in incomingInternalTransactions {
             incomingValue += incomingInternalTransaction.value
         }
-
+        
+        var tags = [TransactionTag]()
+        
+        if let contracts = Safe4CustomTokenManager.safe4DeployContracts(),
+           let to = toAddress?.hex.lowercased(), contracts.contains(to) {
+            tags.append(TransactionTag(type: .incoming, protocol: .eip20, contractAddress: toAddress))
+            return tags
+        }
+        
         // if has value or has internalTxs must add Evm tag
         if outgoingValue == 0, incomingValue == 0 {
             return []
         }
 
-        var tags = [TransactionTag]()
         var addresses = [fromAddress, toAddress]
             .compactMap { $0 }
             .filter { $0 != userAddress }

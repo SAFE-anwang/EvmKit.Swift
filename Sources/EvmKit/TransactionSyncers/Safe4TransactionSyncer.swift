@@ -6,11 +6,12 @@ class Safe4TransactionSyncer {
     private let address: Address
     private let provider: ITransactionProvider
     private let storage: TransactionSyncerStateStorage
-
-    init(address: Address, provider: ITransactionProvider, storage: TransactionSyncerStateStorage) {
+    private let manager: Safe4CustomTokenManager
+    init(address: Address, provider: ITransactionProvider, storage: TransactionSyncerStateStorage, manager: Safe4CustomTokenManager) {
         self.address = address
         self.provider = provider
         self.storage = storage
+        self.manager = manager
     }
 
     private func handle(providerTransactions: [Safe4AccountManagerTransaction]) {
@@ -29,6 +30,9 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
         let initial = lastBlockNumber == 0
 
         do {
+            if initial {
+                try await manager.requestCustomTokens()
+            }
             let transactions = try await provider.safe4AccountManagerTransactions(startBlock: lastBlockNumber + 1)
             let tempArray = transactions.filter{$0.action != "SafeWithdraw"}
             let duplicates = findDuplicates(in: tempArray)

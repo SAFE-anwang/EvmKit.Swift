@@ -356,7 +356,8 @@ extension Kit {
         transactionSyncManager.add(syncer: ethereumTransactionSyncer)
         transactionSyncManager.add(syncer: internalTransactionSyncer)
         if chain == Chain.SafeFour || chain == .SafeFourTestNet {
-            let safe4TransactionSyncer = Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage)
+            let manager = Safe4CustomTokenManager(chain: chain)
+            let safe4TransactionSyncer = Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage, manager: manager)
             transactionSyncManager.add(syncer: safe4TransactionSyncer)
         }
 

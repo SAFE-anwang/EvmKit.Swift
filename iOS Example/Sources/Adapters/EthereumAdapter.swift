@@ -108,7 +108,13 @@ extension EthereumAdapter {
     }
 
     func transactions(from hash: Data?, limit: Int?) -> [TransactionRecord] {
-        evmKit.transactions(tagQueries: [], fromHash: hash, limit: limit).compactMap { transactionRecord(fullTransaction: $0) }
+        do {
+            let address = try Address(hex: "0xbebfd1121a83243cf860d03b3260dea5dbde48c2")
+            let query = TransactionTagQuery(type: nil, protocol: .eip20, contractAddress: address, address: nil)
+            return evmKit.transactions(tagQueries: [query], fromHash: hash, limit: limit).compactMap { transactionRecord(fullTransaction: $0) }
+        }catch{
+            return []
+        }
     }
 
     func transaction(hash: Data, interTransactionIndex _: Int) -> TransactionRecord? {
