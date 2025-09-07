@@ -78,8 +78,8 @@ extension RpcBlockchainSafe4: IRpcSyncerDelegate {
 extension RpcBlockchainSafe4 {
     
     // withdraw account all locked
-    func withdraw(privateKey: Data) {
-        safe4Provider.withdraw(privateKey: privateKey)
+    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
+        safe4Provider.withdraw(type: type, privateKey: privateKey)
     }
 }
 
@@ -116,7 +116,7 @@ extension RpcBlockchainSafe4: IBlockchain {
                 
                 async let balance = try syncer.fetch(rpc: GetBalanceJsonRpc(address: address, defaultBlockParameter: .latest))
                 async let nonce = try syncer.fetch(rpc: GetTransactionCountJsonRpc(address: address, defaultBlockParameter: .latest))
-                async let lockedAmount = try safe4Provider.getLockedAmount(address: address)
+                async let lockedAmount = try safe4Provider.getLockedAmount(type: .native, address: address)
                 let accountState = try await AccountState(balance: balance, nonce: nonce, timeLockBalance: lockedAmount)
                 self?.onUpdate(accountState: accountState)
                 self?.syncState = .synced
@@ -158,8 +158,8 @@ extension RpcBlockchainSafe4: IBlockchain {
         }
     }
     
-    func sendSafe4LineLock(privateKey: Data, transactionData: TransactionData) async throws -> String {
-        try await safe4Provider.sendSafe4LineLock(privateKey: privateKey, value: transactionData.value, to: transactionData.to, times: BigUInt(transactionData.times), spaceDay: BigUInt(transactionData.spaceDay), startDay: BigUInt(transactionData.startDay))
+    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, transactionData: TransactionData) async throws -> String {
+        try await safe4Provider.sendSafe4LineLock(type: type, privateKey: privateKey, value: transactionData.value, to: transactionData.to, times: BigUInt(transactionData.times), spaceDay: BigUInt(transactionData.spaceDay), startDay: BigUInt(transactionData.startDay))
     }
 
     func transactionReceipt(transactionHash: Data) async throws -> RpcTransactionReceipt {

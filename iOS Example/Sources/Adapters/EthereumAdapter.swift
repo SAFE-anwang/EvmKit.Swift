@@ -13,7 +13,9 @@ class EthereumAdapter {
         self.signer = signer
         
         if evmKit.chain == .SafeFour || evmKit.chain == .SafeFourTestNet, let signer {
-            evmKit.withdraw(privateKey: signer.privateKey)
+            evmKit.withdraw(type: .native, privateKey: signer.privateKey)
+            evmKit.withdraw(type: .smallAmount_01, privateKey: signer.privateKey)
+            evmKit.withdraw(type: .smallAmount_02, privateKey: signer.privateKey)
         }
     }
 

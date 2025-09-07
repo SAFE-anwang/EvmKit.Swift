@@ -180,9 +180,9 @@ public extension Kit {
         return RawTransaction(gasPrice: gasPrice, gasLimit: gasLimit, to: transactionData.to, value: transactionData.value, data: transactionInput, nonce: resolvedNonce)
      }
     
-    func sendSafe4LineLock(privateKey: Data, transactionData: TransactionData) async throws -> String? {
+    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, transactionData: TransactionData) async throws -> String? {
         guard let rpc = blockchain as? RpcBlockchainSafe4 else { return nil }
-        return try await rpc.sendSafe4LineLock(privateKey: privateKey, transactionData: transactionData)
+        return try await rpc.sendSafe4LineLock(type: type, privateKey: privateKey, transactionData: transactionData)
      }
     
     func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int? = nil) async throws -> FullTransaction {
@@ -191,9 +191,9 @@ public extension Kit {
         return fullTransactions[0]
     }
     
-    func withdraw(privateKey: Data) {
+    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
         if let blockchain = blockchain as? RpcBlockchainSafe4 {
-            blockchain.withdraw(privateKey: privateKey)
+            blockchain.withdraw(type: type, privateKey: privateKey)
         }
     }
 
