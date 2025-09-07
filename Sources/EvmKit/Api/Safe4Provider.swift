@@ -3,7 +3,6 @@ import web3swift
 import Web3Core
 import BigInt
 
- 
 class Safe4Provider {
     private let urls: [URL]
     private let chain: Chain
@@ -26,9 +25,9 @@ class Safe4Provider {
         }
     }
     
-    func getLockedAmount(address: Address) async throws -> BigUInt {
+    func getLockedAmount(type: AccountManager.ContractType, address: Address) async throws -> BigUInt {
         let web3 = try await web3Instance()
-        return try await web3.safe4.accountmanager.getTotalAmount( Web3Core.EthereumAddress(address.hex)!).amount
+        return try await web3.safe4.accountmanager(type: type).getTotalAmount( Web3Core.EthereumAddress(address.hex)!).amount
     }
     
     func deposit(privateKey: Data, value: BigUInt, to: Address, lockDay: BigUInt) async throws -> String {
@@ -37,17 +36,17 @@ class Safe4Provider {
         return try await web3.safe4.accountmanager.deposit(privateKey: privateKey, value: value, to: to, lockDay: lockDay)
     }
     
-    func sendSafe4LineLock(privateKey: Data, value: BigUInt, to: Address, times: BigUInt, spaceDay: BigUInt, startDay: BigUInt) async throws -> String {
+    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, value: BigUInt, to: Address, times: BigUInt, spaceDay: BigUInt, startDay: BigUInt) async throws -> String {
         let web3 = try await web3Instance()
         let to = Web3Core.EthereumAddress(to.hex)!
-        return try await web3.safe4.accountmanager.batchDeposit4One(privateKey: privateKey, value: value, to: to, times: times, spaceDay: spaceDay, startDay: startDay)
+        return try await web3.safe4.accountmanager(type: type).batchDeposit4One(privateKey: privateKey, value: value, to: to, times: times, spaceDay: spaceDay, startDay: startDay)
     }
     
-    func withdraw(privateKey: Data) {
+    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
         Task {
             do {
                 let web3 = try await web3Instance()
-                let hashHexString = try await web3.safe4.accountmanager.withdraw(privateKey: privateKey)
+                let hashHexString = try await web3.safe4.accountmanager(type: type).withdraw(privateKey: privateKey)
             }catch {
                 print("Safe4 withdraw Error: \(error)")
             }
