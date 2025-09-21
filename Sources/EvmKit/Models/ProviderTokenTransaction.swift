@@ -1,6 +1,7 @@
 import BigInt
 import Foundation
 import ObjectMapper
+import HsToolKit
 
 public struct ProviderTokenTransaction: ImmutableMappable {
     public let blockNumber: Int
@@ -14,12 +15,12 @@ public struct ProviderTokenTransaction: ImmutableMappable {
     public let value: BigUInt
     public let tokenName: String
     public let tokenSymbol: String
-    public let tokenDecimal: Int
-    public let transactionIndex: Int
-    public let gasLimit: Int
-    public let gasPrice: Int
-    public let gasUsed: Int
-    public let cumulativeGasUsed: Int
+    public let tokenDecimal: FlexibleValue
+    public let transactionIndex: FlexibleValue // Int
+    public let gasLimit: FlexibleValue // Int
+    public let gasPrice: FlexibleValue // Int
+    public let gasUsed: FlexibleValue // Int
+    public let cumulativeGasUsed: FlexibleValue // Int
 
     public init(map: Map) throws {
         blockNumber = try map.value("blockNumber", using: StringIntTransform())
@@ -33,11 +34,11 @@ public struct ProviderTokenTransaction: ImmutableMappable {
         value = try map.value("value", using: StringBigUIntTransform())
         tokenName = try map.value("tokenName")
         tokenSymbol = try map.value("tokenSymbol")
-        tokenDecimal = try map.value("tokenDecimal", using: StringIntTransform())
-        transactionIndex = try map.value("transactionIndex", using: StringIntTransform())
-        gasLimit = try map.value("gas", using: StringIntTransform())
-        gasPrice = try map.value("gasPrice", using: StringIntTransform())
-        gasUsed = try map.value("gasUsed", using: StringIntTransform())
-        cumulativeGasUsed = try map.value("cumulativeGasUsed", using: StringIntTransform())
+        tokenDecimal = try map.value("tokenDecimal", using: FlexibleValueTransform())
+        transactionIndex = try map.value("transactionIndex", using: FlexibleValueTransform())
+        gasLimit = try map.value("gas", using: FlexibleValueTransform())
+        gasPrice = try map.value("gasPrice", using: FlexibleValueTransform())
+        gasUsed = try map.value("gasUsed", using: FlexibleValueTransform())
+        cumulativeGasUsed = try map.value("cumulativeGasUsed", using: FlexibleValueTransform())
     }
 }

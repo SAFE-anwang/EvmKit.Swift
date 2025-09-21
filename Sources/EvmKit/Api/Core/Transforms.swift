@@ -109,3 +109,17 @@ struct StringBigUIntTransform: TransformType {
         fatalError("transformToJSON(_:) has not been implemented")
     }
 }
+
+struct FlexibleValueTransform: TransformType {
+    typealias Object = FlexibleValue
+    typealias JSON = Any
+    
+    func transformFromJSON(_ value: Any?) -> FlexibleValue? {
+        guard let value = value else { return .null }
+        return FlexibleValue(rawValue: value)
+    }
+    
+    func transformToJSON(_ value: FlexibleValue?) -> Any? {
+        return value?.rawValue
+    }
+}
