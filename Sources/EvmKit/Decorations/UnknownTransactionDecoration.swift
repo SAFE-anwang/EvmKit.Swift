@@ -40,7 +40,14 @@ open class UnknownTransactionDecoration: TransactionDecoration {
         }
         
         var tags = [TransactionTag]()
-        
+        if let to = toAddress?.eip55.lowercased(), Safe4Contract.allCases.map({$0.rawValue.lowercased()}).contains(to) {
+            let addresses = [fromAddress, toAddress]
+                .compactMap { $0 }
+                .filter { $0 != userAddress }
+                .map(\.hex)
+            tags.append(TransactionTag(type: .outgoing, protocol: .native, addresses: addresses))
+            return tags
+        }
         if let contracts = Safe4CustomTokenManager.safe4DeployContracts(),
            let to = toAddress?.hex.lowercased(), contracts.contains(to) {
             tags.append(TransactionTag(type: .incoming, protocol: .eip20, contractAddress: toAddress))

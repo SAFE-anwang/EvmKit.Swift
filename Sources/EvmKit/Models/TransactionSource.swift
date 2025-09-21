@@ -23,7 +23,7 @@ public extension TransactionSource {
     private static func etherscan(apiSubdomain: String, txSubdomain: String?, apiKeys: [String]) -> TransactionSource {
         TransactionSource(
             name: "etherscan.io",
-            type: .etherscan(apiBaseUrl: "https://\(apiSubdomain).etherscan.io", txBaseUrl: "https://\(txSubdomain.map { "\($0)." } ?? "")etherscan.io", apiKeys: apiKeys)
+            type: .etherscan(apiBaseUrl: "https://\(apiSubdomain).etherscan.io/v2/", txBaseUrl: "https://\(txSubdomain.map { "\($0)." } ?? "")etherscan.io", apiKeys: apiKeys)
         )
     }
 
@@ -54,7 +54,7 @@ public extension TransactionSource {
     static func bscscan(apiKeys: [String]) -> TransactionSource {
         TransactionSource(
             name: "bscscan.com",
-            type: .etherscan(apiBaseUrl: "https://api.bscscan.com", txBaseUrl: "https://bscscan.com", apiKeys: apiKeys)
+            type: .etherscan(apiBaseUrl: "https://api.bscscan.com/v2/", txBaseUrl: "https://bscscan.com", apiKeys: apiKeys)
         )
     }
 
@@ -124,14 +124,14 @@ public extension TransactionSource {
     static func safeFourscan(apiKeys: [String]) -> TransactionSource {
         TransactionSource(
             name: "safe4",
-            type: .etherscan(apiBaseUrl: "https://safe4.anwang.com", txBaseUrl: "https://safe4.anwang.com", apiKeys: apiKeys)
+            type: .etherscan(apiBaseUrl: "https://safe4.anwang.com/", txBaseUrl: "https://safe4.anwang.com", apiKeys: apiKeys)
         )
     }
     
     static func safeFourscanTestNet(apiKeys: [String]) -> TransactionSource {
         TransactionSource(
             name: "safe4",
-            type: .etherscan(apiBaseUrl: "https://safe4testnet.anwang.com", txBaseUrl: "https://safe4testnet.anwang.com", apiKeys: apiKeys)
+            type: .etherscan(apiBaseUrl: "https://safe4testnet.anwang.com/", txBaseUrl: "https://safe4testnet.anwang.com", apiKeys: apiKeys)
         )
     }
     

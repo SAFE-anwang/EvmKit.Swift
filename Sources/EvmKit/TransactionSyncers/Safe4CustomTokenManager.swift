@@ -38,3 +38,15 @@ open class Safe4CustomTokenManager {
         UserDefaults.standard.value(forKey: Safe4CustomTokenManager.safe4DeployContractsKey) as? [String]
     }
 }
+
+public enum Safe4Contract: String, CaseIterable {
+    case PropertyContractAddr = "0x0000000000000000000000000000000000001000"
+    case AccountManagerContractAddr = "0x0000000000000000000000000000000000001010"
+    case MasterNodeStorageContractAddr = "0x0000000000000000000000000000000000001020"
+    case MasterNodeLogicContractAddr = "0x0000000000000000000000000000000000001025"
+    case SuperNodeStorageContractAddr = "0x0000000000000000000000000000000000001030"
+    case SuperNodeLogicContractAddr = "0x0000000000000000000000000000000000001035"
+    case SNVoteContractAddr = "0x0000000000000000000000000000000000001040"
+    case ProposalContractAddr = "0x0000000000000000000000000000000000001070"
+    case Safe3ContractAddr = "0x0000000000000000000000000000000000001090"
+}
