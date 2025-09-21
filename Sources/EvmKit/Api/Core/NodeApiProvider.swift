@@ -3,14 +3,14 @@ import BigInt
 import Foundation
 import HsToolKit
 
-class NodeApiProvider {
+public class NodeApiProvider {
     private let networkManager: NetworkManager
     private let urls: [URL]
 
     private let headers: HTTPHeaders
     private var currentRpcId = 0
 
-    init(networkManager: NetworkManager, urls: [URL], auth: String?) {
+    public init(networkManager: NetworkManager, urls: [URL], auth: String?) {
         self.networkManager = networkManager
         self.urls = urls
 
@@ -34,18 +34,30 @@ class NodeApiProvider {
                 interceptor: self,
                 responseCacherBehavior: .doNotCache
             )
+<<<<<<< HEAD
             
             
             guard let rpcResponse = JsonRpcResponse.response(jsonObject: json) else {
                 throw RequestError.invalidResponse(jsonObject: json)
             }
 
+=======
+
+            guard let rpcResponse = JsonRpcResponse.response(jsonObject: json) else {
+                throw RequestError.invalidResponse(jsonObject: json)
+            }
+
+>>>>>>> e66deb7b23754b91786e1beb930dd663ef15ac03
             return try rpc.parse(response: rpcResponse)
         } catch {
             let nextIndex = (urlIndex + 1) % urls.count
 
             if attempt < urls.count * 2 {
+<<<<<<< HEAD
                 return try await rpcResult(rpc:rpc, urlIndex: nextIndex, attempt: attempt + 1, parameters: parameters)
+=======
+                return try await rpcResult(rpc: rpc, urlIndex: nextIndex, attempt: attempt + 1, parameters: parameters)
+>>>>>>> e66deb7b23754b91786e1beb930dd663ef15ac03
             } else {
                 throw error
             }
@@ -54,7 +66,7 @@ class NodeApiProvider {
 }
 
 extension NodeApiProvider: RequestInterceptor {
-    func retry(_: Request, for _: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
+    public func retry(_: Request, for _: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         if case let JsonRpcResponse.ResponseError.rpcError(rpcError) = error, rpcError.code == -32005 {
             var backoffSeconds = 1.0
 
@@ -70,19 +82,19 @@ extension NodeApiProvider: RequestInterceptor {
 }
 
 extension NodeApiProvider: IRpcApiProvider {
-    var source: String {
+    public var source: String {
         urls.compactMap(\.host).joined(separator: ", ")
     }
 
-    func fetch<T>(rpc: JsonRpc<T>) async throws -> T {
+    public func fetch<T>(rpc: JsonRpc<T>) async throws -> T {
         currentRpcId += 1
 
         return try await rpcResult(rpc: rpc, parameters: rpc.parameters(id: currentRpcId))
     }
 }
 
-extension NodeApiProvider {
-    public enum RequestError: Error {
+public extension NodeApiProvider {
+    enum RequestError: Error {
         case invalidResponse(jsonObject: Any)
     }
 }

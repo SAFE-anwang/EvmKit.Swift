@@ -114,3 +114,9 @@ public class Transaction: Record {
         container[Columns.lockDay] = lockDay
     }
 }
+
+public extension Transaction {
+    var description: String {
+        "[hash: \(hash.hs.hexString); nonce: \(nonce?.description ?? "nil"); blockNumber: \(blockNumber.map { "\($0)" } ?? "nil"); transactionIndex: \(transactionIndex.map { "\($0)" } ?? "nil"); from: \(from?.hex ?? "nil"); to: \(to?.hex ?? "nil"); value: \(value); gasPrice: \(gasPrice); gas: \(gasLimit)]"
+    }
+}
