@@ -11,8 +11,9 @@ public struct TransactionData {
     public var times: Int = -1
     public var spaceDay: Int = 0
     public var startDay: Int = 0
+    public var isCreatePool: Bool = false
     
-    public init(to: Address, value: BigUInt, input: Data, lockTime: Int? = nil, isBothErc: Bool = false, safe4Swap: Int = 0, times: Int = -1, spaceDay: Int = 0, startDay: Int = 0) {
+    public init(to: Address, value: BigUInt, input: Data, lockTime: Int? = nil, isBothErc: Bool = false, safe4Swap: Int = 0, times: Int = -1, spaceDay: Int = 0, startDay: Int = 0, isCreatePool: Bool = false) {
         self.to = to
         self.value = value
         self.input = input
@@ -22,6 +23,7 @@ public struct TransactionData {
         self.times = times
         self.spaceDay = spaceDay
         self.startDay = startDay
+        self.isCreatePool = isCreatePool
     }
     
     mutating public func update(lockTime: Int?) {
