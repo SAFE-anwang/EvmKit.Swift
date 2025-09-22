@@ -339,19 +339,22 @@ extension Kit {
             let socket = WebSocket(url: url, reachabilityManager: reachabilityManager, auth: auth, logger: logger)
             syncer = WebSocketRpcSyncer.instance(socket: socket, logger: logger)
         }
-        let transactionBuilder = TransactionBuilder(chain: chain, address: address)
         let transactionProvider: ITransactionProvider = transactionProvider(transactionSource: transactionSource, address: address, chainId: chain.id, logger: logger)
 
         let storage: IApiStorage = try ApiStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "api-\(uniqueId)")
         var blockchain: IBlockchain
+        var provider: INonceProvider
         if chain == Chain.SafeFour ||  chain == Chain.SafeFourTestNet, case let .http(urls, _) = rpcSource {
             let transactionBuilder = Safe4TransactionBuilder(chain: chain, address: address)
             let safe4Provider = Safe4Provider(chain: chain, urls: urls)
-            blockchain = RpcBlockchainSafe4.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, safe4Provider: safe4Provider, logger: logger)
+            let rpcBlockchain = RpcBlockchainSafe4.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, safe4Provider: safe4Provider, logger: logger)
+            blockchain = rpcBlockchain
+            provider = rpcBlockchain
         }else {
             let transactionBuilder = TransactionBuilder(chain: chain, address: address)
-            blockchain = RpcBlockchain.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, logger: logger)
-
+            let rpcBlockchain = RpcBlockchain.instance(address: address, storage: storage, syncer: syncer, transactionBuilder: transactionBuilder, logger: logger)
+            blockchain = rpcBlockchain
+            provider = rpcBlockchain
         }
 
         let transactionStorage = try TransactionStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "transactions-\(uniqueId)")
@@ -371,9 +374,9 @@ extension Kit {
             let safe4TransactionSyncer = Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage, manager: manager)
             transactionSyncManager.add(syncer: safe4TransactionSyncer)
         }
-
+        
         let nonceProvider = NonceProvider()
-        nonceProvider.add(provider: blockchain)
+        nonceProvider.add(provider: provider)
 
         let eip20Storage = try Eip20Storage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "eip20-\(uniqueId)")
 

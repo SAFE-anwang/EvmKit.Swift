@@ -34,30 +34,16 @@ public class NodeApiProvider {
                 interceptor: self,
                 responseCacherBehavior: .doNotCache
             )
-<<<<<<< HEAD
-            
-            
             guard let rpcResponse = JsonRpcResponse.response(jsonObject: json) else {
                 throw RequestError.invalidResponse(jsonObject: json)
             }
 
-=======
-
-            guard let rpcResponse = JsonRpcResponse.response(jsonObject: json) else {
-                throw RequestError.invalidResponse(jsonObject: json)
-            }
-
->>>>>>> e66deb7b23754b91786e1beb930dd663ef15ac03
             return try rpc.parse(response: rpcResponse)
         } catch {
             let nextIndex = (urlIndex + 1) % urls.count
 
             if attempt < urls.count * 2 {
-<<<<<<< HEAD
-                return try await rpcResult(rpc:rpc, urlIndex: nextIndex, attempt: attempt + 1, parameters: parameters)
-=======
                 return try await rpcResult(rpc: rpc, urlIndex: nextIndex, attempt: attempt + 1, parameters: parameters)
->>>>>>> e66deb7b23754b91786e1beb930dd663ef15ac03
             } else {
                 throw error
             }

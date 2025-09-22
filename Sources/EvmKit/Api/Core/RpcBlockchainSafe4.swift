@@ -83,7 +83,7 @@ extension RpcBlockchainSafe4 {
     }
 }
 
-extension RpcBlockchainSafe4: IBlockchain {
+extension RpcBlockchainSafe4: IBlockchain, INonceProvider {
 
     var source: String {
         "RPC \(syncer.source)"
