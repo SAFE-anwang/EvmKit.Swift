@@ -86,8 +86,14 @@ public extension Eip20Storage {
     }
 
     func save(events: [Event]) {
+        
         try! dbPool.write { db in
             for event in events {
+                if let lastEvent = lastEvent() {
+                    if event.blockNumber == lastEvent.blockNumber && event.hash == lastEvent.hash {
+                        continue
+                    }
+                }
                 try event.save(db)
             }
         }
