@@ -21,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/horizontalsystems/HdWalletKit.Swift.git", .upToNextMajor(from: "1.2.1")),
         .package(url: "https://github.com/horizontalsystems/HsToolKit.Swift.git", .upToNextMajor(from: "2.0.3")),
         .package(url: "https://github.com/horizontalsystems/HsExtensions.Swift.git", .upToNextMajor(from: "1.0.6")),
-        .package(url: "https://github.com/SAFE-anwang/web3swift.git", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/SAFE-anwang/web3swift.git", .upToNextMajor(from: "2.0.29")),
     ],
     targets: [
         .target(
