@@ -76,6 +76,11 @@ public struct TimeLock {
     public let token: Token
     public let lockDays: Int
     
+    public init(token: Token, lockDays: Int) {
+        self.token = token
+        self.lockDays = lockDays
+    }
+    
     public enum Token {
         case native
         case src20(contract: Address)
