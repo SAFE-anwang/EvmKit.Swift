@@ -68,6 +68,6 @@ extension Safe4Provider {
         let web3 = try await web3Instance()
         let to = Web3Core.EthereumAddress(to.hex)!
         let tokenAddress = Web3Core.EthereumAddress(token.hex)!
-        return try await SRC20LockFactory.init(web3: web3Instance(), contractAddr: SRC20LockContract).lock(privateKey: privateKey, token: tokenAddress, to: to, amount: amount, lockDay: lockDay)
+        return try await SRC20LockFactory(web3: web3, contractAddr: SRC20LockContract).lock(privateKey: privateKey, token: tokenAddress, to: to, amount: amount, lockDay: lockDay)
     }
 }

@@ -15,7 +15,7 @@ protocol IBlockchain {
     var accountState: AccountState? { get }
 
     func nonce(defaultBlockParameter: DefaultBlockParameter) async throws -> Int
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int?) async throws -> Transaction
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock?) async throws -> Transaction
 
     func transactionReceipt(transactionHash: Data) async throws -> RpcTransactionReceipt
     func transaction(transactionHash: Data) async throws -> RpcTransaction
@@ -71,3 +71,14 @@ public protocol ITransactionProvider {
     func eip1155Transactions(startBlock: Int) async throws -> [ProviderEip1155Transaction]
     func safe4AccountManagerTransactions(startBlock: Int) async throws -> [Safe4AccountManagerTransaction]
 }
+
+public struct TimeLock {
+    public let token: Token
+    public let lockDays: Int
+    
+    public enum Token {
+        case native
+        case src20(contract: Address)
+    }
+}
+

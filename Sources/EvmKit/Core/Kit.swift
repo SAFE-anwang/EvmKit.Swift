@@ -187,8 +187,8 @@ public extension Kit {
         return try await rpc.sendSafe4LineLock(type: type, privateKey: privateKey, transactionData: transactionData)
      }
     
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int? = nil) async throws -> FullTransaction {
-        let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey, lockDay: lockDay)
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock? = nil) async throws -> FullTransaction {
+        let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey, timeLock: timeLock)
         let fullTransactions = transactionManager.handle(transactions: [transaction])
         return fullTransactions[0]
     }
@@ -197,14 +197,6 @@ public extension Kit {
         if let blockchain = blockchain as? RpcBlockchainSafe4 {
             blockchain.withdraw(type: type, privateKey: privateKey)
         }
-    }
-    
-    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDay: BigUInt) async throws -> String? {
-        guard let rpc = blockchain as? RpcBlockchainSafe4 else { return nil }
-        return try await rpc.src20TimeLock(privateKey: privateKey, token: token, to: to, amount: amount, lockDay: lockDay)
-    }
-    func lockBalance() async throws -> BigUInt {
-        
     }
 
     var debugInfo: String {

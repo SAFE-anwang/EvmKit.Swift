@@ -147,10 +147,17 @@ extension RpcBlockchainSafe4: IBlockchain, INonceProvider {
         try await syncer.fetch(rpc: GetTransactionCountJsonRpc(address: address, defaultBlockParameter: defaultBlockParameter))
     }
 
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int? = nil) async throws -> Transaction {
-        if let days = lockDay {
-            let hash = try await safe4Provider.deposit(privateKey: privateKey, value: rawTransaction.value, to: rawTransaction.to, lockDay: BigUInt(days))
-            return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: days, hash: hash.hs.hexData ?? Data())
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock?) async throws -> Transaction {
+        if let timeLock {
+            switch timeLock.token {
+            case .native:
+                let hash = try await safe4Provider.deposit(privateKey: privateKey, value: rawTransaction.value, to: rawTransaction.to, lockDay: BigUInt(timeLock.lockDays))
+                return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: timeLock.lockDays, hash: hash.hs.hexData ?? Data())
+
+            case let .src20(contract):
+                let hash = try await safe4Provider.src20TimeLock(privateKey: privateKey, token: contract, to: rawTransaction.to, amount: rawTransaction.value, lockDay: BigUInt(timeLock.lockDays))
+                return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: timeLock.lockDays, hash: hash.hs.hexData ?? Data())
+            }
         }else {
             let encoded = transactionBuilder.encode(rawTransaction: rawTransaction, signature: signature)
             _ = try await syncer.fetch(rpc: SendRawTransactionJsonRpc(signedTransaction: encoded))
@@ -221,12 +228,5 @@ extension RpcBlockchainSafe4 {
 
         let provider = NodeApiProvider(networkManager: networkManager, urls: urls, auth: auth)
         return try await provider.fetch(rpc: rpcRequest)
-    }
-}
-
-extension RpcBlockchainSafe4 {
-
-    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDay: BigUInt) async throws -> String {
-        try await safe4Provider.src20TimeLock(privateKey: privateKey, token: token, to: to, amount: amount, lockDay: lockDay)
     }
 }
