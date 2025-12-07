@@ -198,6 +198,14 @@ public extension Kit {
             blockchain.withdraw(type: type, privateKey: privateKey)
         }
     }
+    
+    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDay: BigUInt) async throws -> String? {
+        guard let rpc = blockchain as? RpcBlockchainSafe4 else { return nil }
+        return try await rpc.src20TimeLock(privateKey: privateKey, token: token, to: to, amount: amount, lockDay: lockDay)
+    }
+    func lockBalance() async throws -> BigUInt {
+        
+    }
 
     var debugInfo: String {
         var lines = [String]()

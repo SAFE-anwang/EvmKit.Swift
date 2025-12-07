@@ -12,8 +12,9 @@ public struct TransactionData {
     public var spaceDay: Int = 0
     public var startDay: Int = 0
     public var isCreatePool: Bool = false
+    public var isSRC20Lock: Bool = false
     
-    public init(to: Address, value: BigUInt, input: Data, lockTime: Int? = nil, isBothErc: Bool = false, safe4Swap: Int = 0, times: Int = -1, spaceDay: Int = 0, startDay: Int = 0, isCreatePool: Bool = false) {
+    public init(to: Address, value: BigUInt, input: Data, lockTime: Int? = nil, isBothErc: Bool = false, safe4Swap: Int = 0, times: Int = -1, spaceDay: Int = 0, startDay: Int = 0, isCreatePool: Bool = false, isSRC20Lock: Bool = false) {
         self.to = to
         self.value = value
         self.input = input
@@ -24,6 +25,7 @@ public struct TransactionData {
         self.spaceDay = spaceDay
         self.startDay = startDay
         self.isCreatePool = isCreatePool
+        self.isSRC20Lock = isSRC20Lock
     }
     
     mutating public func update(lockTime: Int?) {
@@ -33,6 +35,6 @@ public struct TransactionData {
 
 extension TransactionData: Equatable {
     public static func == (lhs: TransactionData, rhs: TransactionData) -> Bool {
-        lhs.to == rhs.to && lhs.value == rhs.value && lhs.input == rhs.input && lhs.lockTime == rhs.lockTime && lhs.isBothErc == rhs.isBothErc && lhs.safe4Swap == rhs.safe4Swap
+        lhs.to == rhs.to && lhs.value == rhs.value && lhs.input == rhs.input && lhs.lockTime == rhs.lockTime && lhs.isBothErc == rhs.isBothErc && lhs.safe4Swap == rhs.safe4Swap && lhs.times == rhs.times && lhs.spaceDay == rhs.spaceDay && lhs.startDay == rhs.startDay && lhs.isCreatePool == rhs.isCreatePool && lhs.isSRC20Lock == rhs.isSRC20Lock
     }
 }

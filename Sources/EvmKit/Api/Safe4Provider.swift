@@ -51,6 +51,23 @@ class Safe4Provider {
                 print("Safe4 withdraw Error: \(error)")
             }
         }
+    }
+}
 
+// src20
+extension Safe4Provider {
+    var SRC20LockContract: String {
+        if (chain == .SafeFourTestNet) {
+            "0x4f203092FB68732D8484c099a72dDc5a195f26f9"
+        } else {
+            "0x6A6dFAF83cc1741FE08A9EFDea596dEad68f7420"
+        }
+    }
+
+    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDay: BigUInt) async throws -> String {
+        let web3 = try await web3Instance()
+        let to = Web3Core.EthereumAddress(to.hex)!
+        let tokenAddress = Web3Core.EthereumAddress(token.hex)!
+        return try await SRC20LockFactory.init(web3: web3Instance(), contractAddr: SRC20LockContract).lock(privateKey: privateKey, token: tokenAddress, to: to, amount: amount, lockDay: lockDay)
     }
 }

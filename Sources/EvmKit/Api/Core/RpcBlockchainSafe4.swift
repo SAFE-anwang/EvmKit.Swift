@@ -224,3 +224,9 @@ extension RpcBlockchainSafe4 {
     }
 }
 
+extension RpcBlockchainSafe4 {
+
+    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDay: BigUInt) async throws -> String {
+        try await safe4Provider.src20TimeLock(privateKey: privateKey, token: token, to: to, amount: amount, lockDay: lockDay)
+    }
+}
