@@ -198,6 +198,13 @@ public extension Kit {
             blockchain.withdraw(type: type, privateKey: privateKey)
         }
     }
+    func getLockedBalance(contractAddress: Address) async throws -> BigUInt {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            try await blockchain.getLockedBalance(contractAddress: contractAddress)
+        } else {
+            throw RpcBlockchainError.noRpcBlockchainSafe4
+        }
+    }
 
     var debugInfo: String {
         var lines = [String]()
@@ -465,5 +472,9 @@ public extension Kit {
 
     enum RpcSourceError: Error {
         case websocketNotSupported
+    }
+    
+    enum RpcBlockchainError: Error {
+        case noRpcBlockchainSafe4
     }
 }

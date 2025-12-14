@@ -81,6 +81,10 @@ extension RpcBlockchainSafe4 {
     func withdraw(type: AccountManager.ContractType, privateKey: Data) {
         safe4Provider.withdraw(type: type, privateKey: privateKey)
     }
+    
+    func getLockedBalance(contractAddress: Address) async throws -> BigUInt {
+        try await safe4Provider.getLockedAmount(type: .native, address: contractAddress)
+    }
 }
 
 extension RpcBlockchainSafe4: IBlockchain, INonceProvider {
