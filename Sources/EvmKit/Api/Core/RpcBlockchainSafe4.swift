@@ -191,7 +191,8 @@ extension RpcBlockchainSafe4 {
         try await safe4Provider.sendSafe4LineLock(type: type, privateKey: privateKey, value: transactionData.value, to: transactionData.to, times: BigUInt(transactionData.times), spaceDay: BigUInt(transactionData.spaceDay), startDay: BigUInt(transactionData.startDay))
     }
     
-    func safe4TimeLock(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int) async throws -> Transaction {
+    func sendSafe4TimeLock(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int) async throws -> Transaction {
+        
         let hash = try await safe4Provider.deposit(privateKey: privateKey, value: rawTransaction.value, to: rawTransaction.to, lockDay: BigUInt(lockDay))
         return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: lockDay, hash: hash.hs.hexData ?? Data())
     }
