@@ -133,7 +133,7 @@ extension RpcBlockchain: IBlockchain, INonceProvider {
         try await syncer.fetch(rpc: GetTransactionCountJsonRpc(address: address, defaultBlockParameter: defaultBlockParameter))
     }
 
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock?) async throws -> Transaction {
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data) async throws -> Transaction {
         let encoded = transactionBuilder.encode(rawTransaction: rawTransaction, signature: signature)
 
         _ = try await syncer.fetch(rpc: SendRawTransactionJsonRpc(signedTransaction: encoded))

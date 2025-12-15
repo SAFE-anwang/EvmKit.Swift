@@ -170,42 +170,13 @@ public extension Kit {
     func tagTokens() -> [TagToken] {
         transactionManager.tagTokens()
     }
-    
-    func safe4LockRawTransaction(transactionData: TransactionData, gasPrice: GasPrice, gasLimit: Int, lockDay: Int, nonce: Int? = nil) async throws -> RawTransaction {
-        let transactionInput = Safe4DepositMethod(owner: transactionData.to, lockDay: BigUInt(lockDay)).encodedABI()
-        let resolvedNonce: Int
-        if let nonce {
-            resolvedNonce = nonce
-        } else {
-            resolvedNonce = try await blockchain.nonce(defaultBlockParameter: .pending)
-        }
-        return RawTransaction(gasPrice: gasPrice, gasLimit: gasLimit, to: transactionData.to, value: transactionData.value, data: transactionInput, nonce: resolvedNonce)
-     }
-    
-    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, transactionData: TransactionData) async throws -> String? {
-        guard let rpc = blockchain as? RpcBlockchainSafe4 else { return nil }
-        return try await rpc.sendSafe4LineLock(type: type, privateKey: privateKey, transactionData: transactionData)
-     }
-    
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock? = nil) async throws -> FullTransaction {
-        let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey, timeLock: timeLock)
+        
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data) async throws -> FullTransaction {
+        let transaction = try await blockchain.send(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey)
         let fullTransactions = transactionManager.handle(transactions: [transaction])
         return fullTransactions[0]
     }
     
-    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
-        if let blockchain = blockchain as? RpcBlockchainSafe4 {
-            blockchain.withdraw(type: type, privateKey: privateKey)
-        }
-    }
-    func getLockedBalance(contractAddress: Address) async throws -> BigUInt {
-        if let blockchain = blockchain as? RpcBlockchainSafe4 {
-            try await blockchain.getLockedBalance(contractAddress: contractAddress)
-        } else {
-            throw RpcBlockchainError.noRpcBlockchainSafe4
-        }
-    }
-
     var debugInfo: String {
         var lines = [String]()
 
@@ -285,6 +256,61 @@ public extension Kit {
             ("Blockchain Source", blockchain.source),
             ("Transactions Source", "Infura.io, Etherscan.io"),
         ]
+    }
+}
+
+public extension Kit {
+    // safe4 TimeLock RawTransaction
+    func safe4TimeLockRawTransaction(transactionData: TransactionData, gasPrice: GasPrice, gasLimit: Int, lockDay: Int, nonce: Int? = nil) async throws -> RawTransaction {
+        let transactionInput = Safe4DepositMethod(owner: transactionData.to, lockDay: BigUInt(lockDay)).encodedABI()
+        let resolvedNonce: Int
+        if let nonce {
+            resolvedNonce = nonce
+        } else {
+            resolvedNonce = try await blockchain.nonce(defaultBlockParameter: .pending)
+        }
+        return RawTransaction(gasPrice: gasPrice, gasLimit: gasLimit, to: transactionData.to, value: transactionData.value, data: transactionInput, nonce: resolvedNonce)
+    }
+    
+    // safe4 TimeLock Transaction
+    func safe4TimeLock(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int) async throws -> Transaction {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            try await blockchain.safe4TimeLock(rawTransaction: rawTransaction, signature: signature, privateKey: privateKey, lockDay: lockDay)
+        }else{
+            throw RpcBlockchainError.noRpcBlockchainSafe4
+        }
+    }
+    
+    // src20 TimeLock
+    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDays: Int) async throws -> String {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            try await blockchain.src20TimeLock(privateKey: privateKey, token: token, to: to, amount: amount, lockDays: lockDays)
+        }else{
+            throw RpcBlockchainError.noRpcBlockchainSafe4
+        }
+    }
+    
+    // Safe4 LineLock
+    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, transactionData: TransactionData) async throws -> String {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            try await blockchain.sendSafe4LineLock(type: type, privateKey: privateKey, transactionData: transactionData)
+        }else{
+            throw RpcBlockchainError.noRpcBlockchainSafe4
+        }
+    }
+    
+    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            blockchain.withdraw(type: type, privateKey: privateKey)
+        }
+    }
+    
+    func getLockedBalance(contractAddress: Address) async throws -> BigUInt {
+        if let blockchain = blockchain as? RpcBlockchainSafe4 {
+            try await blockchain.getLockedBalance(contractAddress: contractAddress)
+        } else {
+            throw RpcBlockchainError.noRpcBlockchainSafe4
+        }
     }
 }
 

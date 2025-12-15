@@ -15,8 +15,7 @@ protocol IBlockchain {
     var accountState: AccountState? { get }
 
     func nonce(defaultBlockParameter: DefaultBlockParameter) async throws -> Int
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock?) async throws -> Transaction
-
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data) async throws -> Transaction
     func transactionReceipt(transactionHash: Data) async throws -> RpcTransactionReceipt
     func transaction(transactionHash: Data) async throws -> RpcTransaction
     func getStorageAt(contractAddress: Address, positionData: Data, defaultBlockParameter: DefaultBlockParameter) async throws -> Data

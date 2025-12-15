@@ -151,26 +151,10 @@ extension RpcBlockchainSafe4: IBlockchain, INonceProvider {
         try await syncer.fetch(rpc: GetTransactionCountJsonRpc(address: address, defaultBlockParameter: defaultBlockParameter))
     }
 
-    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, timeLock: TimeLock?) async throws -> Transaction {
-        if let timeLock {
-            switch timeLock.token {
-            case .native:
-                let hash = try await safe4Provider.deposit(privateKey: privateKey, value: rawTransaction.value, to: rawTransaction.to, lockDay: BigUInt(timeLock.lockDays))
-                return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: timeLock.lockDays, hash: hash.hs.hexData ?? Data())
-
-            case let .src20(contract):
-                let hash = try await safe4Provider.src20TimeLock(privateKey: privateKey, token: contract, to: rawTransaction.to, amount: rawTransaction.value, lockDay: BigUInt(timeLock.lockDays))
-                return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: timeLock.lockDays, hash: hash.hs.hexData ?? Data())
-            }
-        }else {
-            let encoded = transactionBuilder.encode(rawTransaction: rawTransaction, signature: signature)
-            _ = try await syncer.fetch(rpc: SendRawTransactionJsonRpc(signedTransaction: encoded))
-            return transactionBuilder.transaction(rawTransaction: rawTransaction, signature: signature)
-        }
-    }
-    
-    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, transactionData: TransactionData) async throws -> String {
-        try await safe4Provider.sendSafe4LineLock(type: type, privateKey: privateKey, value: transactionData.value, to: transactionData.to, times: BigUInt(transactionData.times), spaceDay: BigUInt(transactionData.spaceDay), startDay: BigUInt(transactionData.startDay))
+    func send(rawTransaction: RawTransaction, signature: Signature, privateKey: Data) async throws -> Transaction {
+        let encoded = transactionBuilder.encode(rawTransaction: rawTransaction, signature: signature)
+        _ = try await syncer.fetch(rpc: SendRawTransactionJsonRpc(signedTransaction: encoded))
+        return transactionBuilder.transaction(rawTransaction: rawTransaction, signature: signature)
     }
 
     func transactionReceipt(transactionHash: Data) async throws -> RpcTransactionReceipt {
@@ -199,6 +183,21 @@ extension RpcBlockchainSafe4: IBlockchain, INonceProvider {
 
     func fetch<T>(rpcRequest: JsonRpc<T>) async throws -> T {
         try await syncer.fetch(rpc: rpcRequest)
+    }
+}
+
+extension RpcBlockchainSafe4 {
+    func sendSafe4LineLock(type: AccountManager.ContractType, privateKey: Data, transactionData: TransactionData) async throws -> String {
+        try await safe4Provider.sendSafe4LineLock(type: type, privateKey: privateKey, value: transactionData.value, to: transactionData.to, times: BigUInt(transactionData.times), spaceDay: BigUInt(transactionData.spaceDay), startDay: BigUInt(transactionData.startDay))
+    }
+    
+    func safe4TimeLock(rawTransaction: RawTransaction, signature: Signature, privateKey: Data, lockDay: Int) async throws -> Transaction {
+        let hash = try await safe4Provider.deposit(privateKey: privateKey, value: rawTransaction.value, to: rawTransaction.to, lockDay: BigUInt(lockDay))
+        return try transactionBuilder.transactionDeposit(rawTransaction: rawTransaction, signature: signature, lockDay: lockDay, hash: hash.hs.hexData ?? Data())
+    }
+    
+    func src20TimeLock(privateKey: Data, token: Address, to: Address, amount: BigUInt, lockDays: Int) async throws -> String {
+        return try await safe4Provider.src20TimeLock(privateKey: privateKey, token: token, to: to, amount: amount, lockDay: BigUInt(lockDays))
     }
 }
 
