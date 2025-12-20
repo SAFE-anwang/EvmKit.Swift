@@ -4,12 +4,10 @@ import GRDB
 class Eip20Balance: Record {
     let contractAddress: String
     let value: BigUInt?
-    let locked: BigUInt?
     
-    init(contractAddress: String, value: BigUInt?, locked: BigUInt?) {
+    init(contractAddress: String, value: BigUInt?) {
         self.contractAddress = contractAddress
         self.value = value
-        self.locked = locked
         super.init()
     }
 
@@ -20,19 +18,16 @@ class Eip20Balance: Record {
     enum Columns: String, ColumnExpression {
         case contractAddress
         case value
-        case locked
     }
 
     required init(row: Row) throws {
         contractAddress = row[Columns.contractAddress]
         value = row[Columns.value]
-        locked = row[Columns.locked]
         try super.init(row: row)
     }
 
     override func encode(to container: inout PersistenceContainer) throws {
         container[Columns.contractAddress] = contractAddress
         container[Columns.value] = value
-        container[Columns.locked] = locked
     }
 }

@@ -20,7 +20,6 @@ public class Eip20Storage {
             try db.create(table: Eip20Balance.databaseTableName) { t in
                 t.column(Eip20Balance.Columns.contractAddress.name, .text).notNull()
                 t.column(Eip20Balance.Columns.value.name, .text)
-                t.column(Eip20Balance.Columns.locked.name, .text)
                 
                 t.primaryKey([Eip20Balance.Columns.contractAddress.name], onConflict: .replace)
             }
@@ -54,11 +53,6 @@ public class Eip20Storage {
 }
 
 public extension Eip20Storage {
-    func locked(contractAddress: Address) -> BigUInt? {
-        try! dbPool.read { db in
-            try Eip20Balance.filter(Eip20Balance.Columns.contractAddress == contractAddress.hex).fetchOne(db)?.locked
-        }
-    }
     
     func balance(contractAddress: Address) -> BigUInt? {
         try! dbPool.read { db in
@@ -66,9 +60,9 @@ public extension Eip20Storage {
         }
     }
 
-    func save(balance: BigUInt, locked: BigUInt, contractAddress: Address) {
+    func save(balance: BigUInt, contractAddress: Address) {
         _ = try? dbPool.write { db in
-            try Eip20Balance(contractAddress: contractAddress.hex, value: balance, locked: locked).insert(db)
+            try Eip20Balance(contractAddress: contractAddress.hex, value: balance).insert(db)
         }
     }
 
