@@ -74,10 +74,12 @@ public protocol ITransactionProvider {
 public struct TimeLock {
     public let token: Token
     public let lockDays: Int
+    public var value: BigUInt
     
-    public init(token: Token, lockDays: Int) {
+    public init(token: Token, lockDays: Int, value: BigUInt) {
         self.token = token
         self.lockDays = lockDays
+        self.value = value
     }
     
     public enum Token {
