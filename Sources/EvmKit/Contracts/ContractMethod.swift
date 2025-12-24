@@ -11,7 +11,7 @@ open class ContractMethod {
         fatalError("Subclasses must override.")
     }
 
-    public var methodId: Data {
+    open var methodId: Data {
         ContractMethodHelper.methodId(signature: methodSignature)
     }
 
