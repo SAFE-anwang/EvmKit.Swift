@@ -301,12 +301,6 @@ public extension Kit {
         }
     }
     
-    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
-        if let blockchain = blockchain as? RpcBlockchainSafe4 {
-            blockchain.withdraw(type: type, privateKey: privateKey)
-        }
-    }
-    
     func getLockedBalance(contractAddress: Address) async throws -> BigUInt {
         if let blockchain = blockchain as? RpcBlockchainSafe4 {
             try await blockchain.getLockedBalance(contractAddress: contractAddress)
