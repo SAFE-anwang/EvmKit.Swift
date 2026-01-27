@@ -41,17 +41,6 @@ class Safe4Provider {
         let to = Web3Core.EthereumAddress(to.hex)!
         return try await web3.safe4.accountmanager(type: type).batchDeposit4One(privateKey: privateKey, value: value, to: to, times: times, spaceDay: spaceDay, startDay: startDay)
     }
-    
-    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
-        Task {
-            do {
-                let web3 = try await web3Instance()
-                let hashHexString = try await web3.safe4.accountmanager(type: type).withdraw(privateKey: privateKey)
-            }catch {
-                print("Safe4 withdraw Error: \(error)")
-            }
-        }
-    }
 }
 
 // src20

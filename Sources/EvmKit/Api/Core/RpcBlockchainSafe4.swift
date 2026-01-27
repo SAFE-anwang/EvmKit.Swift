@@ -77,11 +77,6 @@ extension RpcBlockchainSafe4: IRpcSyncerDelegate {
 }
 extension RpcBlockchainSafe4 {
     
-    // withdraw account all locked
-    func withdraw(type: AccountManager.ContractType, privateKey: Data) {
-        safe4Provider.withdraw(type: type, privateKey: privateKey)
-    }
-    
     func getLockedBalance(contractAddress: Address) async throws -> BigUInt {
         try await safe4Provider.getLockedAmount(type: .native, address: contractAddress)
     }
