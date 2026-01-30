@@ -273,7 +273,7 @@ extension TransactionStorage {
     }
 
     func save(transactions: [Transaction]) {
-        try! dbPool.write { db in
+        try? dbPool.write { db in
             for transaction in transactions {
                 try transaction.save(db)
             }
