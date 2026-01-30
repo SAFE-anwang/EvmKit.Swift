@@ -376,7 +376,7 @@ extension TransactionStorage {
     }
 
     func save(internalTransactions: [InternalTransaction]) {
-        try! dbPool.write { db in
+        try? dbPool.write { db in
             for internalTransaction in internalTransactions {
                 try internalTransaction.save(db)
             }
@@ -398,7 +398,7 @@ extension TransactionStorage {
     }
 
     func save(tags: [TransactionTagRecord]) {
-        try! dbPool.write { db in
+        try? dbPool.write { db in
             for tag in tags {
                 try tag.save(db)
             }
