@@ -33,43 +33,88 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
             if initial {
                 try await manager.requestCustomTokens()
             }
-            let transactions = try await provider.safe4AccountManagerTransactions(startBlock: lastBlockNumber + 1)
-            let tempArray = transactions.filter{$0.action != "SafeWithdraw"}
-            let duplicates = findDuplicates(in: tempArray)
-            handle(providerTransactions: transactions)
+            let providerTransactions = try await provider.safe4AccountManagerTransactions(startBlock: lastBlockNumber + 1)
+            handle(providerTransactions: providerTransactions)
 
-            let array = transactions.map { tx -> Transaction in
-
-                var  total = tx.amount
-                if let num = duplicates[tx.hash] {
-                    total = total * BigUInt(num)
-                }
-
-                return Transaction(
-                    hash: tx.hash,
-                    timestamp: tx.timestamp,
-                    isFailed: false,
-                    blockNumber: tx.blockNumber,
-                    from: tx.from,
-                    to: tx.to,
-                    value: total,//tx.amount,
-                    lockDay: tx.lockDay
-                )
-            }
-
+            let array = mergedTransactions(providerTransactions: providerTransactions)
             return (array, initial)
         } catch {
             return ([], initial)
         }
     }
-    
-    func findDuplicates(in array: [Safe4AccountManagerTransaction]) -> [Data: Int] {
-        var elementCount: [Data: Int] = [:]
-        for element in array {
-            elementCount[element.hash, default: 0] += 1
+
+    private func mergedTransactions(providerTransactions: [Safe4AccountManagerTransaction]) -> [Transaction] {
+        // "SafeWithdraw" events are intermediate split records and should not be shown as standalone rows.
+        let filteredTransactions = providerTransactions.filter { $0.action != "SafeWithdraw" }
+        let groupedTransactions = Dictionary(grouping: filteredTransactions, by: \.hash)
+
+        return groupedTransactions.compactMap { _, group in
+            guard !group.isEmpty else {
+                return nil
+            }
+
+            var seenKeys = Set<String>()
+            var uniqueTransactions = [Safe4AccountManagerTransaction]()
+
+            for transaction in group {
+                let deduplicationKey = deduplicationKey(transaction: transaction)
+                if seenKeys.insert(deduplicationKey).inserted {
+                    uniqueTransactions.append(transaction)
+                }
+            }
+
+            guard let baseTransaction = uniqueTransactions.min(by: baseTransactionComparator) ?? uniqueTransactions.first else {
+                return nil
+            }
+
+            let totalAmount = uniqueTransactions.reduce(BigUInt.zero) { partialResult, transaction in
+                partialResult + transaction.amount
+            }
+            let blockNumber = uniqueTransactions.map(\.blockNumber).max() ?? baseTransaction.blockNumber
+            let timestamp = uniqueTransactions.map(\.timestamp).max() ?? baseTransaction.timestamp
+
+            return Transaction(
+                hash: baseTransaction.hash,
+                timestamp: timestamp,
+                isFailed: false,
+                blockNumber: blockNumber,
+                from: baseTransaction.from,
+                to: baseTransaction.to,
+                value: totalAmount,
+                lockDay: baseTransaction.lockDay
+            )
         }
-        let duplicates = elementCount.filter { $0.value > 1 }
-        return duplicates
+    }
+
+    private func deduplicationKey(transaction: Safe4AccountManagerTransaction) -> String {
+        if transaction.eventLogIndex >= 0 {
+            return "event:\(transaction.eventLogIndex)"
+        }
+
+        if !transaction.lockId.isEmpty {
+            return "lock:\(transaction.lockId)"
+        }
+
+        return [
+            "fallback",
+            transaction.action,
+            transaction.from?.hex.lowercased() ?? "",
+            transaction.to?.hex.lowercased() ?? "",
+            transaction.amount.description,
+            "\(transaction.timestamp)",
+            "\(transaction.blockNumber)",
+        ].joined(separator: "|")
+    }
+
+    private func baseTransactionComparator(lhs: Safe4AccountManagerTransaction, rhs: Safe4AccountManagerTransaction) -> Bool {
+        if lhs.eventLogIndex != rhs.eventLogIndex {
+            return lhs.eventLogIndex < rhs.eventLogIndex
+        }
+
+        if lhs.timestamp != rhs.timestamp {
+            return lhs.timestamp < rhs.timestamp
+        }
+
+        return lhs.lockId < rhs.lockId
     }
 }
-

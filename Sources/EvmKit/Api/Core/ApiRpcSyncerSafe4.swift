@@ -51,6 +51,7 @@ class ApiRpcSyncerSafe4 {
     }
 
     private func startTimer() {
+        timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: syncInterval, repeats: true) { [weak self] _ in
             self?.onFireTimer()
         }
@@ -100,4 +101,3 @@ extension ApiRpcSyncerSafe4: IRpcSyncer {
         try await rpcApiProvider.fetch(rpc: rpc)
     }
 }
-

@@ -67,6 +67,7 @@ class EtherscanTransactionProvider {
 
         return result
     }
+
 }
 
 extension EtherscanTransactionProvider: ITransactionProvider {
