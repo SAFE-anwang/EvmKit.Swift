@@ -177,29 +177,46 @@ extension TransactionStorage {
             if let fromHash = hash,
                let fromTransaction = try Transaction.filter(Transaction.Columns.hash == fromHash).fetchOne(db)
             {
-                let transactionIndex = fromTransaction.transactionIndex ?? 0
+                let fromCondition: String
+                if let transactionIndex = fromTransaction.transactionIndex {
+                    fromCondition = """
+                    (
+                     \(Transaction.Columns.timestamp.name) < ? OR
+                         (
+                             \(Transaction.databaseTableName).\(Transaction.Columns.timestamp.name) = ? AND
+                             (
+                                 \(Transaction.databaseTableName).\(Transaction.Columns.transactionIndex.name) < ? OR
+                                 \(Transaction.databaseTableName).\(Transaction.Columns.transactionIndex.name) IS NULL OR
+                                 (
+                                     \(Transaction.databaseTableName).\(Transaction.Columns.transactionIndex.name) = ? AND
+                                     \(Transaction.databaseTableName).\(Transaction.Columns.hash.name) < ?
+                                 )
+                             )
+                         )
+                    )
+                    """
 
-                let fromCondition = """
-                (
-                 \(Transaction.Columns.timestamp.name) < ? OR
-                     (
-                         \(Transaction.databaseTableName).\(Transaction.Columns.timestamp.name) = ? AND
-                         \(Transaction.databaseTableName).\(Transaction.Columns.transactionIndex.name) < ?
-                     ) OR
-                     (
-                         \(Transaction.databaseTableName).\(Transaction.Columns.timestamp.name) = ? AND
-                         \(Transaction.databaseTableName).\(Transaction.Columns.transactionIndex.name) IS ? AND
-                         \(Transaction.databaseTableName).\(Transaction.Columns.hash.name) < ?
-                     )
-                )
-                """
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(transactionIndex)
+                    arguments.append(transactionIndex)
+                    arguments.append(fromTransaction.hash)
+                } else {
+                    fromCondition = """
+                    (
+                     \(Transaction.Columns.timestamp.name) < ? OR
+                         (
+                             \(Transaction.databaseTableName).\(Transaction.Columns.timestamp.name) = ? AND
+                             \(Transaction.databaseTableName).\(Transaction.Columns.transactionIndex.name) IS NULL AND
+                             \(Transaction.databaseTableName).\(Transaction.Columns.hash.name) < ?
+                         )
+                    )
+                    """
 
-                arguments.append(fromTransaction.timestamp)
-                arguments.append(fromTransaction.timestamp)
-                arguments.append(transactionIndex)
-                arguments.append(fromTransaction.timestamp)
-                arguments.append(transactionIndex)
-                arguments.append(fromTransaction.hash)
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(fromTransaction.hash)
+                }
 
                 whereConditions.append(fromCondition)
             }
@@ -242,28 +259,50 @@ extension TransactionStorage {
                let fromTransaction = try Transaction.filter(Transaction.Columns.hash == fromHash).fetchOne(db)
             {
                 var arguments = [DatabaseValueConvertible]()
-                let fromCondition = """
-                (
-                 \(Transaction.Columns.timestamp.name) > ? OR
-                     (
-                         \(Transaction.Columns.timestamp.name) = ? AND
-                         \(Transaction.Columns.transactionIndex.name) > ?
-                     ) OR
-                     (
-                         \(Transaction.Columns.timestamp.name) = ? AND
-                         \(Transaction.Columns.transactionIndex.name) IS ? AND
-                         \(Transaction.Columns.hash.name) > ?
-                     )
-                )
-                """
+                let fromCondition: String
+                if let transactionIndex = fromTransaction.transactionIndex {
+                    fromCondition = """
+                    (
+                     \(Transaction.Columns.timestamp.name) > ? OR
+                         (
+                             \(Transaction.Columns.timestamp.name) = ? AND
+                             (
+                                 \(Transaction.Columns.transactionIndex.name) > ? OR
+                                 (
+                                     \(Transaction.Columns.transactionIndex.name) = ? AND
+                                     \(Transaction.Columns.hash.name) > ?
+                                 )
+                             )
+                         )
+                    )
+                    """
 
-                let transactionIndex = fromTransaction.transactionIndex ?? 0
-                arguments.append(fromTransaction.timestamp)
-                arguments.append(fromTransaction.timestamp)
-                arguments.append(transactionIndex)
-                arguments.append(fromTransaction.timestamp)
-                arguments.append(transactionIndex)
-                arguments.append(fromTransaction.hash)
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(transactionIndex)
+                    arguments.append(transactionIndex)
+                    arguments.append(fromTransaction.hash)
+                } else {
+                    fromCondition = """
+                    (
+                     \(Transaction.Columns.timestamp.name) > ? OR
+                         (
+                             \(Transaction.Columns.timestamp.name) = ? AND
+                             (
+                                 (
+                                     \(Transaction.Columns.transactionIndex.name) IS NULL AND
+                                     \(Transaction.Columns.hash.name) > ?
+                                 ) OR
+                                 \(Transaction.Columns.transactionIndex.name) IS NOT NULL
+                             )
+                         )
+                    )
+                    """
+
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(fromTransaction.timestamp)
+                    arguments.append(fromTransaction.hash)
+                }
 
                 transactions = transactions.filter(sql: fromCondition, arguments: StatementArguments(arguments))
             }

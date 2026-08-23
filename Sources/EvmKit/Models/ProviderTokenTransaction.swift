@@ -16,7 +16,7 @@ public struct ProviderTokenTransaction: ImmutableMappable {
     public let tokenName: String
     public let tokenSymbol: String
     public let tokenDecimal: FlexibleValue
-    public let transactionIndex: FlexibleValue // Int
+    public let transactionIndex: FlexibleValue? // Int
     public let gasLimit: FlexibleValue // Int
     public let gasPrice: FlexibleValue // Int
     public let gasUsed: FlexibleValue // Int
@@ -35,7 +35,7 @@ public struct ProviderTokenTransaction: ImmutableMappable {
         tokenName = try map.value("tokenName")
         tokenSymbol = try map.value("tokenSymbol")
         tokenDecimal = try map.value("tokenDecimal", using: FlexibleValueTransform())
-        transactionIndex = try map.value("transactionIndex", using: FlexibleValueTransform())
+        transactionIndex = try? map.value("transactionIndex", using: FlexibleValueTransform())
         gasLimit = try map.value("gas", using: FlexibleValueTransform())
         gasPrice = try map.value("gasPrice", using: FlexibleValueTransform())
         gasUsed = try map.value("gasUsed", using: FlexibleValueTransform())
