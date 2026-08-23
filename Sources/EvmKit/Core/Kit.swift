@@ -20,6 +20,8 @@ public class Kit {
     private let blockchain: IBlockchain
     private let nonceProvider: NonceProvider
     public let transactionManager: TransactionManager
+    public let transactionStorage: TransactionStorage
+    public let transactionSyncerStateStorage: TransactionSyncerStateStorage
     private let transactionSyncManager: TransactionSyncManager
     private let decorationManager: DecorationManager
     public let eip20Storage: Eip20Storage
@@ -34,6 +36,7 @@ public class Kit {
     public let logger: Logger
 
     init(blockchain: IBlockchain, nonceProvider: NonceProvider, transactionManager: TransactionManager, transactionSyncManager: TransactionSyncManager,
+         transactionStorage: TransactionStorage, transactionSyncerStateStorage: TransactionSyncerStateStorage,
          state: EvmKitState = EvmKitState(), address: Address, chain: Chain, uniqueId: String,
          transactionProvider: ITransactionProvider, decorationManager: DecorationManager, eip20Storage: Eip20Storage,
          logger: Logger)
@@ -42,6 +45,8 @@ public class Kit {
         self.nonceProvider = nonceProvider
         self.transactionManager = transactionManager
         self.transactionSyncManager = transactionSyncManager
+        self.transactionStorage = transactionStorage
+        self.transactionSyncerStateStorage = transactionSyncerStateStorage
         self.state = state
         self.address = address
         self.chain = chain
@@ -221,6 +226,18 @@ public extension Kit {
         transactionSyncManager.add(syncer: transactionSyncer)
     }
 
+    func set(syncers: [ITransactionSyncer]) {
+        transactionSyncManager.set(syncers: syncers)
+    }
+
+    public var ethereumSyncer: ITransactionSyncer {
+        EthereumTransactionSyncer(provider: transactionProvider, storage: transactionSyncerStateStorage)
+    }
+
+    public var internalSyncer: ITransactionSyncer {
+        InternalTransactionSyncer(provider: transactionProvider, storage: transactionStorage)
+    }
+
     func add(nonceProvider: INonceProvider) {
         self.nonceProvider.add(provider: nonceProvider)
     }
@@ -390,8 +407,6 @@ extension Kit {
         let transactionSyncerStateStorage = try TransactionSyncerStateStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "transaction-syncer-states-\(uniqueId)")
         let safe4TransactionSyncerStateStorage = try TransactionSyncerStateStorage(databaseDirectoryUrl: dataDirectoryUrl(), databaseFileName: "safe4-transaction-syncer-states-\(uniqueId)")
 
-        let ethereumTransactionSyncer = EthereumTransactionSyncer(provider: transactionProvider, storage: transactionSyncerStateStorage)
-        let internalTransactionSyncer = InternalTransactionSyncer(provider: transactionProvider, storage: transactionStorage)
         let decorationManager = DecorationManager(userAddress: address, storage: transactionStorage)
         let transactionManager = TransactionManager(userAddress: address, storage: transactionStorage, decorationManager: decorationManager, blockchain: blockchain, transactionProvider: transactionProvider)
         let transactionSyncManager = TransactionSyncManager(transactionManager: transactionManager)
@@ -404,6 +419,9 @@ extension Kit {
             transactionSyncManager.add(syncer: safe4TransactionSyncer)
         }
         
+        // Transaction syncers are not added here; each consumer composes its own set,
+        // e.g. evmKit.set(syncers: [evmKit.ethereumSyncer, evmKit.internalSyncer, ...]).
+
         let nonceProvider = NonceProvider()
         nonceProvider.add(provider: provider)
 
@@ -411,6 +429,7 @@ extension Kit {
 
         let kit = Kit(
             blockchain: blockchain, nonceProvider: nonceProvider, transactionManager: transactionManager, transactionSyncManager: transactionSyncManager,
+            transactionStorage: transactionStorage, transactionSyncerStateStorage: transactionSyncerStateStorage,
             address: address, chain: chain, uniqueId: uniqueId, transactionProvider: transactionProvider, decorationManager: decorationManager,
             eip20Storage: eip20Storage, logger: logger
         )

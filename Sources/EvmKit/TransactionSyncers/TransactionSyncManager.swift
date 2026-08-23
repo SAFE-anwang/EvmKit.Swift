@@ -127,6 +127,12 @@ extension TransactionSyncManager {
         }
     }
 
+    func set(syncers: [ITransactionSyncer]) {
+        queue.async {
+            self._syncers = syncers
+        }
+    }
+
     func sync() {
         queue.async {
             self._sync()
