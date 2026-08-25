@@ -73,7 +73,7 @@ public struct ProviderTokenTransaction: ImmutableMappable {
         self.tokenName = tokenName
         self.tokenSymbol = tokenSymbol
         self.tokenDecimal = .int(tokenDecimal)
-        self.transactionIndex = transactionIndex.map { .int($0) }
+        self.transactionIndex = transactionIndex.map { FlexibleValue.int($0) }
         self.gasLimit = .int(gasLimit)
         self.gasPrice = .int(gasPrice)
         self.gasUsed = .int(gasUsed)
