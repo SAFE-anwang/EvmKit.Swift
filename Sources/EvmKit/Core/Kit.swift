@@ -22,6 +22,7 @@ public class Kit {
     public let transactionManager: TransactionManager
     public let transactionStorage: TransactionStorage
     public let transactionSyncerStateStorage: TransactionSyncerStateStorage
+    private let safe4TransactionSyncerStateStorage: TransactionSyncerStateStorage
     private let transactionSyncManager: TransactionSyncManager
     private let decorationManager: DecorationManager
     public let eip20Storage: Eip20Storage
@@ -37,6 +38,7 @@ public class Kit {
 
     init(blockchain: IBlockchain, nonceProvider: NonceProvider, transactionManager: TransactionManager, transactionSyncManager: TransactionSyncManager,
          transactionStorage: TransactionStorage, transactionSyncerStateStorage: TransactionSyncerStateStorage,
+         safe4TransactionSyncerStateStorage: TransactionSyncerStateStorage,
          state: EvmKitState = EvmKitState(), address: Address, chain: Chain, uniqueId: String,
          transactionProvider: ITransactionProvider, decorationManager: DecorationManager, eip20Storage: Eip20Storage,
          logger: Logger)
@@ -47,6 +49,7 @@ public class Kit {
         self.transactionSyncManager = transactionSyncManager
         self.transactionStorage = transactionStorage
         self.transactionSyncerStateStorage = transactionSyncerStateStorage
+        self.safe4TransactionSyncerStateStorage = safe4TransactionSyncerStateStorage
         self.state = state
         self.address = address
         self.chain = chain
@@ -238,6 +241,15 @@ public extension Kit {
         InternalTransactionSyncer(provider: transactionProvider, storage: transactionStorage)
     }
 
+    public var safe4Syncer: ITransactionSyncer? {
+        guard chain == .SafeFour || chain == .SafeFourTestNet else {
+            return nil
+        }
+
+        let manager = Safe4CustomTokenManager(chain: chain)
+        return Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage, manager: manager)
+    }
+
     func add(nonceProvider: INonceProvider) {
         self.nonceProvider.add(provider: nonceProvider)
     }
@@ -411,14 +423,6 @@ extension Kit {
         let transactionManager = TransactionManager(userAddress: address, storage: transactionStorage, decorationManager: decorationManager, blockchain: blockchain, transactionProvider: transactionProvider)
         let transactionSyncManager = TransactionSyncManager(transactionManager: transactionManager)
 
-        transactionSyncManager.add(syncer: ethereumTransactionSyncer)
-        transactionSyncManager.add(syncer: internalTransactionSyncer)
-        if chain == Chain.SafeFour || chain == .SafeFourTestNet {
-            let manager = Safe4CustomTokenManager(chain: chain)
-            let safe4TransactionSyncer = Safe4TransactionSyncer(address: address, provider: transactionProvider, storage: safe4TransactionSyncerStateStorage, manager: manager)
-            transactionSyncManager.add(syncer: safe4TransactionSyncer)
-        }
-        
         // Transaction syncers are not added here; each consumer composes its own set,
         // e.g. evmKit.set(syncers: [evmKit.ethereumSyncer, evmKit.internalSyncer, ...]).
 
@@ -430,6 +434,7 @@ extension Kit {
         let kit = Kit(
             blockchain: blockchain, nonceProvider: nonceProvider, transactionManager: transactionManager, transactionSyncManager: transactionSyncManager,
             transactionStorage: transactionStorage, transactionSyncerStateStorage: transactionSyncerStateStorage,
+            safe4TransactionSyncerStateStorage: safe4TransactionSyncerStateStorage,
             address: address, chain: chain, uniqueId: uniqueId, transactionProvider: transactionProvider, decorationManager: decorationManager,
             eip20Storage: eip20Storage, logger: logger
         )
