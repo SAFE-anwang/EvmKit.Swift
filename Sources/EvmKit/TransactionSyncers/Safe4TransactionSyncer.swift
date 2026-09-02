@@ -82,8 +82,8 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
                 blockNumber: blockNumber,
                 from: baseTransaction.from,
                 to: baseTransaction.to,
-                safe4Value: totalAmount,
-                lockDay: baseTransaction.lockDay
+                lockDay: baseTransaction.lockDay,
+                safe4Value: totalAmount
             )
         }
     }

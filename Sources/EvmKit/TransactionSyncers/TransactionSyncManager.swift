@@ -55,26 +55,42 @@ class TransactionSyncManager {
     }
 
     static func merge(lhsTransaction lhs: Transaction, rhsTransaction rhs: Transaction, isLocked: Bool = false) -> Transaction {
-        Transaction(
+        let isFailed = isLocked ? lhs.isFailed : lhs.isFailed || rhs.isFailed
+        let blockNumber = lhs.blockNumber ?? rhs.blockNumber
+        let transactionIndex = lhs.transactionIndex ?? rhs.transactionIndex
+        let from = lhs.from ?? rhs.from
+        let to = lhs.to ?? rhs.to
+        let value = lhs.value ?? rhs.value
+        let input = lhs.input ?? rhs.input
+        let nonce = lhs.nonce ?? rhs.nonce
+        let gasPrice = lhs.gasPrice ?? rhs.gasPrice
+        let maxFeePerGas = lhs.maxFeePerGas ?? rhs.maxFeePerGas
+        let maxPriorityFeePerGas = lhs.maxPriorityFeePerGas ?? rhs.maxPriorityFeePerGas
+        let gasLimit = lhs.gasLimit ?? rhs.gasLimit
+        let gasUsed = lhs.gasUsed ?? rhs.gasUsed
+        let replacedWith = lhs.replacedWith ?? rhs.replacedWith
+        let lockDay = lhs.lockDay ?? rhs.lockDay
+        let safe4Value = lhs.safe4Value ?? rhs.safe4Value
+
+        return Transaction(
             hash: lhs.hash,
             timestamp: lhs.timestamp,
-            isFailed: isLocked ? lhs.isFailed : lhs.isFailed || rhs.isFailed,
-            blockNumber: lhs.blockNumber ?? rhs.blockNumber,
-            transactionIndex: lhs.transactionIndex ?? rhs.transactionIndex,
-            from: lhs.from ?? rhs.from,
-            to: lhs.to ?? rhs.to,
-            value: lhs.value ?? rhs.value,
-            safe4Value: lhs.safe4Value ?? rhs.safe4Value,
-            input: lhs.input ?? rhs.input,
-            nonce: lhs.nonce ?? rhs.nonce,
-            gasPrice: lhs.gasPrice ?? rhs.gasPrice,
-            maxFeePerGas: lhs.maxFeePerGas ?? rhs.maxFeePerGas,
-            maxPriorityFeePerGas: lhs.maxPriorityFeePerGas ?? rhs.maxPriorityFeePerGas,
-            gasLimit: lhs.gasLimit ?? rhs.gasLimit,
-            gasUsed: lhs.gasUsed ?? rhs.gasUsed,
-            replacedWith: lhs.replacedWith ?? rhs.replacedWith,
-            lockDay: lhs.lockDay ?? rhs.lockDay
-            
+            isFailed: isFailed,
+            blockNumber: blockNumber,
+            transactionIndex: transactionIndex,
+            from: from,
+            to: to,
+            value: value,
+            input: input,
+            nonce: nonce,
+            gasPrice: gasPrice,
+            maxFeePerGas: maxFeePerGas,
+            maxPriorityFeePerGas: maxPriorityFeePerGas,
+            gasLimit: gasLimit,
+            gasUsed: gasUsed,
+            replacedWith: replacedWith,
+            lockDay: lockDay,
+            safe4Value: safe4Value
         )
     }
 
