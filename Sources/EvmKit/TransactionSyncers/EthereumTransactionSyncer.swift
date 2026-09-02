@@ -22,6 +22,8 @@ class EthereumTransactionSyncer {
 }
 
 extension EthereumTransactionSyncer: ITransactionSyncer {
+    var kind: TransactionSyncerKind { .ethereum }
+
     func transactions() async throws -> ([Transaction], Bool) {
         let lastBlockNumber = (try? storage.syncerState(syncerId: syncerId))?.lastBlockNumber ?? 0
         let initial = lastBlockNumber == 0

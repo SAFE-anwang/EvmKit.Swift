@@ -12,6 +12,9 @@ public class Transaction: Record {
     public let from: Address?
     public let to: Address?
     public let value: BigUInt?
+    /// Safe4 account-manager amount associated with the transaction hash.
+    /// This is kept separate from the native transaction value.
+    public let safe4Value: BigUInt?
     public let input: Data?
     public let nonce: Int?
     public let gasPrice: Int?
@@ -24,7 +27,7 @@ public class Transaction: Record {
     
     public var lockDay: Int?
 
-    public init(hash: Data, timestamp: Int, isFailed: Bool, blockNumber: Int? = nil, transactionIndex: Int? = nil, from: Address? = nil, to: Address? = nil, value: BigUInt? = nil, input: Data? = nil, nonce: Int? = nil, gasPrice: Int? = nil, maxFeePerGas: Int? = nil, maxPriorityFeePerGas: Int? = nil, gasLimit: Int? = nil, gasUsed: Int? = nil, replacedWith: Data? = nil, lockDay: Int? = nil) {
+    public init(hash: Data, timestamp: Int, isFailed: Bool, blockNumber: Int? = nil, transactionIndex: Int? = nil, from: Address? = nil, to: Address? = nil, value: BigUInt? = nil, input: Data? = nil, nonce: Int? = nil, gasPrice: Int? = nil, maxFeePerGas: Int? = nil, maxPriorityFeePerGas: Int? = nil, gasLimit: Int? = nil, gasUsed: Int? = nil, replacedWith: Data? = nil, lockDay: Int? = nil, safe4Value: BigUInt? = nil) {
         self.hash = hash
         self.timestamp = timestamp
         self.isFailed = isFailed
@@ -33,6 +36,7 @@ public class Transaction: Record {
         self.from = from
         self.to = to
         self.value = value
+        self.safe4Value = safe4Value
         self.input = input
         self.nonce = nonce
         self.gasPrice = gasPrice
@@ -59,6 +63,7 @@ public class Transaction: Record {
         case from
         case to
         case value
+        case safe4Value
         case input
         case nonce
         case gasPrice
@@ -81,6 +86,7 @@ public class Transaction: Record {
         let toRow: Data? = row[Columns.to]
         to = toRow.map { Address(raw: $0) }
         value = row[Columns.value]
+        safe4Value = row[Columns.safe4Value]
         input = row[Columns.input]
         nonce = row[Columns.nonce]
         gasPrice = row[Columns.gasPrice]
@@ -103,6 +109,7 @@ public class Transaction: Record {
         container[Columns.from] = from?.raw
         container[Columns.to] = to?.raw
         container[Columns.value] = value
+        container[Columns.safe4Value] = safe4Value
         container[Columns.input] = input
         container[Columns.nonce] = nonce
         container[Columns.gasPrice] = gasPrice

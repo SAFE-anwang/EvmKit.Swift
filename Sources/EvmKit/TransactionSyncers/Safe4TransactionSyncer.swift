@@ -25,6 +25,8 @@ class Safe4TransactionSyncer {
 }
 
 extension Safe4TransactionSyncer: ITransactionSyncer {
+    var kind: TransactionSyncerKind { .safe4 }
+
     func transactions() async throws -> ([Transaction], Bool) {
         let lastBlockNumber = (try? storage.syncerState(syncerId: syncerId))?.lastBlockNumber ?? 0
         let initial = lastBlockNumber == 0
@@ -80,7 +82,7 @@ extension Safe4TransactionSyncer: ITransactionSyncer {
                 blockNumber: blockNumber,
                 from: baseTransaction.from,
                 to: baseTransaction.to,
-                value: totalAmount,
+                safe4Value: totalAmount,
                 lockDay: baseTransaction.lockDay
             )
         }

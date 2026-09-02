@@ -24,9 +24,22 @@ class TransactionSyncManager {
         self.transactionManager = transactionManager
     }
 
-    private func _handle(resultArray: [([Transaction], Bool)]) {
-        let transactions = Array(resultArray.map(\.0).joined())
-        let initial = resultArray.map(\.1).allSatisfy { $0 }
+    private struct SyncResult {
+        let index: Int
+        let kind: TransactionSyncerKind
+        let transactions: [Transaction]
+        let initial: Bool
+    }
+
+    private func _handle(resultArray: [SyncResult]) {
+        let orderedResults = resultArray.sorted {
+            if $0.kind.rawValue != $1.kind.rawValue {
+                return $0.kind.rawValue < $1.kind.rawValue
+            }
+            return $0.index < $1.index
+        }
+        let transactions = Array(orderedResults.flatMap(\.transactions))
+        let initial = orderedResults.map(\.initial).allSatisfy { $0 }
 
         var dictionary = [Data: Transaction]()
 
@@ -45,12 +58,13 @@ class TransactionSyncManager {
         Transaction(
             hash: lhs.hash,
             timestamp: lhs.timestamp,
-            isFailed: isLocked ? lhs.isFailed : rhs.isFailed,
+            isFailed: isLocked ? lhs.isFailed : lhs.isFailed || rhs.isFailed,
             blockNumber: lhs.blockNumber ?? rhs.blockNumber,
             transactionIndex: lhs.transactionIndex ?? rhs.transactionIndex,
             from: lhs.from ?? rhs.from,
             to: lhs.to ?? rhs.to,
             value: lhs.value ?? rhs.value,
+            safe4Value: lhs.safe4Value ?? rhs.safe4Value,
             input: lhs.input ?? rhs.input,
             nonce: lhs.nonce ?? rhs.nonce,
             gasPrice: lhs.gasPrice ?? rhs.gasPrice,
@@ -64,7 +78,7 @@ class TransactionSyncManager {
         )
     }
 
-    private func handleSuccess(resultArray: [([Transaction], Bool)]) {
+    private func handleSuccess(resultArray: [SyncResult]) {
         queue.async {
             self._handle(resultArray: resultArray)
             self._state = .synced
@@ -86,14 +100,15 @@ class TransactionSyncManager {
 
         Task { [weak self, _syncers] in
             do {
-                let resultArray = try await withThrowingTaskGroup(of: ([Transaction], Bool).self) { group in
-                    for syncer in _syncers {
+                let resultArray = try await withThrowingTaskGroup(of: SyncResult.self) { group in
+                    for (index, syncer) in _syncers.enumerated() {
                         group.addTask {
-                            try await syncer.transactions()
+                            let (transactions, initial) = try await syncer.transactions()
+                            return SyncResult(index: index, kind: syncer.kind, transactions: transactions, initial: initial)
                         }
                     }
 
-                    var array = [([Transaction], Bool)]()
+                    var array = [SyncResult]()
 
                     for try await result in group {
                         array.append(result)

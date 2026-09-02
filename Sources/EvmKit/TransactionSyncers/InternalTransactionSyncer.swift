@@ -30,6 +30,8 @@ class InternalTransactionSyncer {
 }
 
 extension InternalTransactionSyncer: ITransactionSyncer {
+    var kind: TransactionSyncerKind { .internalTransactions }
+
     func transactions() async throws -> ([Transaction], Bool) {
         let lastBlockNumber = storage.lastInternalTransaction()?.blockNumber ?? 0
         let initial = lastBlockNumber == 0

@@ -36,7 +36,20 @@ protocol IBlockchainDelegate: AnyObject {
 }
 
 public protocol ITransactionSyncer {
+    var kind: TransactionSyncerKind { get }
     func transactions() async throws -> ([Transaction], Bool)
+}
+
+public enum TransactionSyncerKind: Int, Sendable {
+    case ethereum = 0
+    case internalTransactions = 1
+    case safe4 = 2
+    case supplemental = 3
+}
+
+public extension ITransactionSyncer {
+    /// External syncers remain source-compatible and are treated as supplemental.
+    var kind: TransactionSyncerKind { .supplemental }
 }
 
 protocol ITransactionManagerDelegate: AnyObject {
@@ -87,4 +100,3 @@ public struct TimeLock {
         case src20(contract: Address)
     }
 }
-

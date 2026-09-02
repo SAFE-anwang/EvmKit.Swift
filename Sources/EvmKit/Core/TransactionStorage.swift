@@ -116,6 +116,12 @@ public class TransactionStorage {
             }
         }
 
+        migrator.registerMigration("add Safe4 value to Transaction") { db in
+            try db.alter(table: Transaction.databaseTableName) { t in
+                t.add(column: Transaction.Columns.safe4Value.name, .text)
+            }
+        }
+
         return migrator
     }
 }
