@@ -2,7 +2,8 @@ import Foundation
 import BigInt
 
 class Safe4TransactionSyncer {
-    private let syncerId = "safe4-account-manager-transaction-syncer"
+    // Bump the state key so existing wallets backfill safe4Value once.
+    private let syncerId = "safe4-account-manager-transaction-syncer-v2"
     private let address: Address
     private let provider: ITransactionProvider
     private let storage: TransactionSyncerStateStorage

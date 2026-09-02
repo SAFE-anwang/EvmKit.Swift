@@ -1,7 +1,8 @@
 import BigInt
 
 class EthereumTransactionSyncer {
-    private let syncerId = "ethereum-transaction-syncer"
+    // Bump the state key so existing wallets re-fetch canonical values once.
+    private let syncerId = "ethereum-transaction-syncer-v2"
 
     private let provider: ITransactionProvider
     private let storage: TransactionSyncerStateStorage
