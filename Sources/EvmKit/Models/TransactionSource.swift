@@ -121,6 +121,13 @@ public extension TransactionSource {
         )
     }
     
+    static func robinhood(apiKeys: [String]) -> TransactionSource {
+        TransactionSource(
+            name: "robinhoodchain.blockscout.com",
+            type: .etherscan(apiBaseUrl: "https://api.blockscout.com/v2", txBaseUrl: "https://robinhoodchain.blockscout.com", apiKeys: apiKeys)
+        )
+    }
+    
     static func safeFourscan(apiKeys: [String]) -> TransactionSource {
         TransactionSource(
             name: "safe4",
@@ -134,5 +141,4 @@ public extension TransactionSource {
             type: .etherscan(apiBaseUrl: "https://safe4testnet.anwang.com/", txBaseUrl: "https://safe4testnet.anwang.com", apiKeys: apiKeys)
         )
     }
-    
 }
